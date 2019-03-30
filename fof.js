@@ -601,16 +601,16 @@ function completeDrag(e)
     
 }
 
-function hide_all()
+function show_hide_all(e)
 {
-    items = document.getElementsByClassName("item", "items");
-    items.each( function(e) { e.className = "item hidden"; });
-}
-
-function show_all()
-{
-    items = document.getElementsByClassName("item", "items");
-    items.each( function(e) { e.className = "item shown"; });
+	if (e.length)
+	{
+	    items = document.getElementsByClassName("item", "items");
+		for (var i = 0; i < items.length; i++) 
+		{
+			items[i].className = "item " + e;
+		}
+	}
 }
 
 function hide_body(id)
@@ -905,4 +905,8 @@ function ajaxadd()
     feedi = iterate(feedslist);
     continueadd();
 }
-
+function pageRefresh(f, wait)
+{
+	var t = wait * 1000 * 60;
+	setInterval(f, t);
+}
