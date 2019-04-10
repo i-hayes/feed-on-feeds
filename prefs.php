@@ -155,6 +155,13 @@ if(fof_is_admin() && isset($_POST['deleteuser']) && $_POST['username'])
 <?php if(strlen($message)) { ?>
 <script>
 Document.onLoad = setTimeout(hideMessage, 10000);
+var cookie = "ddd"; 
+cookie = getCookie("fof_prefs_cookie");
+document.write(cookie);
+if (cookie.length)
+{
+	toggle_show(cookie); 
+}
 
 function hideMessage() 
 {
@@ -513,3 +520,12 @@ function date_select($name, $prefs, $value, $script = NULL)
 }
 ?>
 
+<script>
+var cookie = ""; 
+cookie = getCookie("fof_prefs_cookie");
+
+if (cookie.length)
+{
+	toggle_show(cookie); 
+}
+</script>

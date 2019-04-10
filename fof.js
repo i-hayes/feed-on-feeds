@@ -616,21 +616,51 @@ function show_hide_all(e)
 
 function toggle_show(e)
 {
-	 
 	items = document.getElementById(e);
 
 	if (items.style.display == "")
 	{
 		items.style.display = "block"; 
+		document.cookie = "fof_prefs_cookie=" + e;
 	}
 	else
 	{
 		items.style.display = "";
+		document.cookie = "fof_prefs_cookie=''; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
 	}
 }
 
+function accessCookie(cookieName)
+{
+	var name = cookieName + "=";
+	var allCookieArray = document.cookie.split(';');
+	for(var i=0; i<allCookieArray.length; i++)
+	{
+		var temp = allCookieArray[i].trim();
+		if (temp.indexOf(name)==0) return temp.substring(name.length,temp.length);
+	}
+	return "";
+}
 
-
+function getCookie(cname) 
+{
+	var name = cname + "=";
+	var decodedCookie = decodeURIComponent(document.cookie);
+	var ca = decodedCookie.split(';');
+	for(var i = 0; i <ca.length; i++)
+	{
+		var c = ca[i];
+		while (c.charAt(0) == ' ') 
+		{
+			c = c.substring(1);
+		}
+		if (c.indexOf(name) == 0) 
+		{
+			return c.substring(name.length, c.length);
+		}
+	}
+	return "";
+}
 function hide_body(id)
 {
     $('i' + id).className = 'item hidden';
