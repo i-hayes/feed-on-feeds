@@ -610,9 +610,26 @@ function show_hide_all(e)
 		{
 			items[i].className = "item " + e;
 		}
-		document.cookie = "colapse="+e;
+		document.cookie = "colapse=" + e;
 	}
 }
+
+function toggle_show(e)
+{
+	 
+	items = document.getElementById(e);
+
+	if (items.style.display == "")
+	{
+		items.style.display = "block"; 
+	}
+	else
+	{
+		items.style.display = "";
+	}
+}
+
+
 
 function hide_body(id)
 {

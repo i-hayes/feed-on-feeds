@@ -112,8 +112,13 @@ img
     background: #ccc;
     border-bottom: 1px solid grey;
 	padding-left: 20px;
+	margin-top: 10px;
 }
 
+.heading.prefs
+{
+	cursor: pointer;
+}
 #sidebar td
 {
     font-size: 10px;
@@ -577,7 +582,7 @@ div.date-item-published
 	padding: 10px; 
 	font-size: 12px; 
 	font-family: verdana, arial;
-	display: block;
+	display: none;
 }
 
 .input.small-number

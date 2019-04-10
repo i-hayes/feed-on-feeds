@@ -169,8 +169,8 @@ function hideMessage()
 ?>
 
 <div class="main-heading"><h1>Feed on Feeds</h1></div>
-<div class="heading"><h2>Preferences</h2></div>
-<div class="container">
+<div class="heading prefs" onClick="toggle_show('prefs');"><h2>Preferences</h2></div>
+<div class="container" id="prefs">
   <form method="post" action="<?php print (FOF_BASEDIR); ?>?prefs=1">
     <div class="prefs-row">
       <div class="column-one">Default display order:</div>
@@ -271,8 +271,8 @@ print (" current: ".date($prefs->get('dlformat')));
   </form>
 </div>
 
-<div class="heading"><h2>Plugin Preferences</h2></div>
-<div class="container">
+<div class="heading prefs" onClick="toggle_show('plugin');"><h2>Plugin Preferences</h2></div>
+<div class="container" id="plugin">
   <form method="post" action="<?php print (FOF_BASEDIR); ?>?prefs=1">
 <?php
     $plugins = array();
@@ -326,8 +326,8 @@ print (" current: ".date($prefs->get('dlformat')));
 </div>
 
 
-<div class="heading"><h2>Feeds and Tags</h2></div>
-<div class="container">
+<div class="heading prefs" onClick="toggle_show('feedstags');"><h2>Feeds and Tags</h2></div>
+<div class="container" id="feedstags">
   <div class="prefs-row table Feeds-and-Tags">
  
 <?php
@@ -390,8 +390,8 @@ foreach($feeds as $row)
 
 <?php if(fof_is_admin()) { ?>
 
-<div class="heading"><h2>Admin Options</h2></div>
-<div class="container">
+<div class="heading prefs" onClick="toggle_show('admin');"><h2>Admin Options</h2></div>
+<div class="container" id="admin">
   <form method="post" action="<?php print (FOF_BASEDIR);?>?prefs=1">
     <div class="prefs-row">
       <div class="column-one">Enable logging? </div>
@@ -416,8 +416,8 @@ foreach($feeds as $row)
   </form>
 </div>
 
-<div class="heading"><h2>Admin Options - Add User</h2></div>
-<div class="container">
+<div class="heading prefs" onClick="toggle_show('adduser');"><h2>Admin Options - Add User</h2></div>
+<div class="container" id="adduser">
   <form method="post" action="<?php print (FOF_BASEDIR);?>?prefs=1">
     <div class="prefs-row">
       <div class="column-one">Username: <input type=string name=username></div>
@@ -441,8 +441,8 @@ foreach($feeds as $row)
     {
 ?>
 
-<div class="heading"><h2>Admin Options - Delete User</h2></div>
-<div class="container">
+<div class="heading prefs" onClick="toggle_show('deleteuser');"><h2>Admin Options - Delete User</h2></div>
+<div class="container" id="deleteuser">
   <form method="post" action="<?php print (FOF_BASEDIR);?>?prefs=1" onsubmit="return confirm('Delete User - Are you sure?')">
     <div class="prefs-row">
       <div class="column-one">
@@ -455,8 +455,8 @@ foreach($feeds as $row)
   </form>
 </div>
 
-<div class="heading"><h2>Admin Options - Change User's Password</h2></div>
-<div class="container">
+<div class="heading prefs" onClick="toggle_show('password');"><h2>Admin Options - Change User's Password</h2></div>
+<div class="container" id="password">
   <form method="post" action="<?php print (FOF_BASEDIR);?>?prefs=1" onsubmit="return confirm('Change Password - Are you sure?')">
     <div class="prefs-row table">
       <div class="prefs-row table-row">
@@ -485,8 +485,8 @@ foreach($feeds as $row)
 
 <?php } ?>
 
-<div class="heading"><h2>Admin Options - Uninstall Feed on Feeds</h2></div>
-<div class="container">
+<div class="heading prefs" onClick="toggle_show('uninstall');"><h2>Admin Options - Uninstall Feed on Feeds</h2></div>
+<div class="container" id="uninstall">
   <form method="get" action="uninstall.php" onsubmit="return confirm('Really?  This will delete all the database tables!')">
     <div class="prefs-row">
       <div class="column-one">
