@@ -24,8 +24,12 @@ if (isset($_GET["logout"])) fof_logout();
 if (isset($_GET["view-action"])) fof_view_action();
 
 include("header.php");
+?>
+<div id="sidebar">
+<?php
 include("sidebar.php");
 ?>
+</div>
 <div id="handle" onmousedown="startResize(event)"></div>
 <?php 
 if (isset($_GET["update"]))

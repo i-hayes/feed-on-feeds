@@ -1,4 +1,5 @@
 <?php
+if (!isset($_SESSION)) session_start();
 /*
  * This file is part of FEED ON FEEDS - http://feedonfeeds.com/
  *
