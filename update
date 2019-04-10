@@ -1,0 +1,16 @@
+2019-04-10
+
+Updated database routines to work with PHP7 and Mysqli
+Updated authentication to hashed and salted passwords. 
+	This required a change to the user table. 
+	Changed from cookie sessions to PHP sessions.
+Added ability to remember a logon as option. 
+	This required a change to the user table.
+Changed structure so all pages are accessed through the index.php file.
+Fixed a sorting bug.
+Added ability to change the display of dates.
+Added ability to have all entries show just the heading by default.
+Updated the display format.
+Added a timer to refresh the side pane every 10 minutes. Adjustable from the config file.
+Fixed the sort button in the top menu.
+Multiple other code clean ups and optimizations.

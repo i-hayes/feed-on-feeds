@@ -14,7 +14,8 @@
 
 include_once("fof-main.php");
 
-$prefs =& FoF_Prefs::instance();
+$FoF_Prefs = new FoF_Prefs("");
+$prefs = $FoF_Prefs->instance();
 
 foreach($_POST as $k => $v)
 {

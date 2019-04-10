@@ -1,4 +1,5 @@
 <?php
+if (!isset($_SESSION)) session_start();
 /*
  * This file is part of FEED ON FEEDS - http://feedonfeeds.com/
  *
@@ -14,19 +15,22 @@
 
 include_once("fof-main.php");
 
-$tags = $_GET['tag'];
+if (isset($_GET['tag'])) $tags = explode(" ", $_GET['tag']);
 $item = $_GET['item'];
 $remove = $_GET['remove'];
 
-foreach(explode(" ", $tags) as $tag)
+if (isset($tags))
 {
-    if($remove == 'true')
-    {
-        fof_untag_item(fof_current_user(), $item, $tag);
-    }
-    else
-    {
-        fof_tag_item(fof_current_user(), $item, $tag);
-    }
+	foreach($tags as $tag)
+	{
+		if(isset($remove) and $remove == 'true')
+		{
+			fof_untag_item(fof_current_user(), $item, $tag);
+		}
+		else
+		{
+			fof_tag_item(fof_current_user(), $item, $tag);
+		}
+	}
 }
 ?>

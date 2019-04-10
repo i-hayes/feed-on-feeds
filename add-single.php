@@ -1,4 +1,5 @@
 <?php
+if (!isset($_SESSION)) session_start();
 /*
  * This file is part of FEED ON FEEDS - http://feedonfeeds.com/
  *
@@ -12,10 +13,11 @@
  *
  */
 
+$fof_installer = false;
+
 include_once("fof-main.php");
 
 $url = $_REQUEST['url'];
-$unread = $_REQUEST['unread'];
-
+$unread = (isset($_REQUEST['unread']) ? $_REQUEST['unread'] : 1);
 print(fof_subscribe(fof_current_user(), $url, $unread));
 ?>

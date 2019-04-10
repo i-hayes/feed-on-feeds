@@ -20,7 +20,8 @@ $fof_no_login = true;
 $fof_user_id = 1;
 include_once("fof-main.php");
 
-$p =& FoF_Prefs::instance();
+$FoF_Prefs = new FoF_Prefs("");
+$p = $FoF_Prefs->instance();
 $fof_admin_prefs = $p->prefs;
 
 fof_log("=== update started, timeout = $fof_admin_prefs[autotimeout], purge = $fof_admin_prefs[purge] ===", "update");
@@ -41,7 +42,7 @@ while($feed = fof_db_get_row($result))
     }
 }
 
-$feeds = fof_multi_sort($feeds, 'feed_cache_attempt_date', false);
+//$feeds = fof_multi_sort($feeds, 'feed_cache_attempt_date', false);
 
 foreach($feeds as $feed)
 {

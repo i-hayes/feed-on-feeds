@@ -12,9 +12,11 @@
  *
  */
 
+$fof_installer = false;
 include_once("fof-main.php");
 
 $feed = $_GET['feed'];
+$feed = $feed + 0;
 
 list ($count, $error) = fof_update_feed($feed);
 	

@@ -12,8 +12,6 @@
  *
  */
 
-include_once("fof-main.php");
-
 fof_set_content_type();
 
 if(isset($_COOKIE['fof_sidebar_width']))
@@ -28,20 +26,17 @@ else
 $unread_count = fof_get_unread_count(fof_current_user());
 
 ?>
-<!DOCTYPE html>
-<html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
 
    <head>
       <title>Feed on Feeds<?php if($unread_count) echo " ($unread_count)";?></title>
       
       <link rel="stylesheet" href="fof.css" media="screen" />
-
-      <link rel="microsummary" href="microsummary.php" />
+      <link rel="microsummary" href="microsummary.php" />      
       
       <script src="prototype/prototype.js" type="text/javascript"></script>
-      
       <script src="fof.js" type="text/javascript"></script>
-      
       <script>
       	document.onmousemove = dragResize;
       	document.onmouseup = completeDrag;
@@ -84,12 +79,5 @@ $unread_count = fof_get_unread_count(fof_current_user());
 
    </head>
       
-  <body class="highlight-on"> <!--onkeypress="keyboard(event)"-->
+  <body class="highlight-on" onLoad="pageRefresh('refreshlist()', 10);"> <!--onkeypress="keyboard(event)"-->
 
-<div id="sidebar">
- <?php include("sidebar.php") ?>
-</div>
-
-<div id="handle" onmousedown="startResize(event)"></div>
-
-<div id="items">

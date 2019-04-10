@@ -17,23 +17,23 @@ class FoF_Prefs
 	var $user_id;
     var $prefs;
     var $admin_prefs;
+    var $tzoffset;
     
-	function FoF_Prefs($user_id)
+	function __construct($user_id)
 	{
-        global $FOF_USER_TABLE;
-        
+
 		$this->user_id = $user_id;
 
-        $result = fof_safe_query("select user_prefs from $FOF_USER_TABLE where user_id = %d", $user_id);
-        $row = mysql_fetch_array($result);
+        $result = fof_safe_query("select `user_prefs` from `".FOF_USER_TABLE."` where `user_id` = %d", $user_id);
+        $row = $result->fetch_assoc();
         $prefs = unserialize($row['user_prefs']);
         if(!is_array($prefs)) $prefs = array();
         $this->prefs = $prefs;
-        
+
         if($user_id != 1)
         {
-            $result = fof_safe_query("select user_prefs from $FOF_USER_TABLE where user_id = 1");
-            $row = mysql_fetch_array($result);
+            $result = fof_safe_query("select `user_prefs` from `".FOF_USER_TABLE."` where `user_id` = 1");
+			$row = $result->fetch_assoc();
             $admin_prefs = unserialize($row['user_prefs']);
             if(!is_array($admin_prefs)) $admin_prefs = array();
             $this->admin_prefs = $admin_prefs;
@@ -69,6 +69,11 @@ class FoF_Prefs
             "sharing" => "no",
             "feed_order" => "feed_title",
             "feed_direction" => "asc",
+            "order" => "desc",
+            "tzoffset" => 0,
+            "dsformat" => "Y/n/d",
+            "dlformat" => "dS M Y",
+            "remember" => 0,
             );
         
         $admin_defaults = array(
@@ -76,6 +81,9 @@ class FoF_Prefs
             "autotimeout" => 30,
             "manualtimeout" => 15,
             "logging" => false,
+            "tzoffset" => 0,
+            "dsformat" => "Y/n/d",
+            "dlformat" => "dS M Y",
              );
         
         $this->stuff_array($this->prefs, $defaults);
@@ -92,7 +100,7 @@ class FoF_Prefs
     
     function get($k)
     {
-        return $this->prefs[$k];
+    	if (isset($this->prefs[$k])) return $this->prefs[$k]; else return "";
     }
     
     function set($k, $v)

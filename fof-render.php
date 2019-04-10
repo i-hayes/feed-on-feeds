@@ -18,7 +18,7 @@ function do_highlight($full_body, $q, $class){
 	/* seperate tags and data from the HTML file INCLUDING comments, avoiding HTML in the comments */
 	$pat = '/((<[^!][\/]*?[^<>]*?>)([^<]*))|((<!--[ \r\n\t]*)(.*)[ \r\n\t]*-->([^<]*))/si';
 	preg_match_all($pat,$full_body,$tag_matches);
-
+	$full_body_hl = "";
 	/* loop through and highlight $q value in data and recombine with tags */
 	for ($i=0; $i< count($tag_matches[0]); $i++) {
 		/* ignore all text within these tags */
@@ -50,19 +50,22 @@ function fof_render_item($item)
 
 	$feed_link = $item['feed_link'];
 	$feed_title = $item['feed_title'];
+	$feed_title = str_replace("<a ", "<a target=\"_blank\"", $item['feed_title']);
 	$feed_image = $item['feed_image'];
 	$feed_description = $item['feed_description'];
 
 	$item_link = $item['item_link'];
 	$item_id = $item['item_id'];
 	$item_title = $item['item_title'];
+	$item_title = str_replace("<a ", "<a target=\"_blank\"", $item['item_title']);
 	$item_content = $item['item_content'];
-	$item_read = $item['item_read'];
+	$item_content = str_replace("<a ", "<a target=\"_blank\"", $item['item_content']);
+	$item_read = (isset($item['item_read']) ? $item['item_read'] : 0);
 
 	$prefs = fof_prefs();
 	$offset = $prefs['tzoffset'];
 
-	$item_published = gmdate("Y-n-d g:ia", $item['item_published'] + $offset*60*60);
+	$item_published = gmdate($prefs['dsformat']." ".$prefs['tformat'], $item['item_published'] + $offset*60*60);
 	$item_cached = gmdate("Y-n-d g:ia", $item['item_cached'] + $offset*60*60);
 	$item_updated = gmdate("Y-n-d g:ia", $item['item_updated'] + $offset*60*60);
 
@@ -73,20 +76,20 @@ function fof_render_item($item)
 		$item_content = do_highlight("<span>$item_content</span>", $_GET['search'], "highlight");
 		$item_title = do_highlight("<span>$item_title</span>", $_GET['search'], "highlight");
 	}
-	    
-    $tags = $item['tags'];
+	
+	$tags = $item['tags'];
 
 	$star = in_array("star", $tags) ? true : false;
 	$star_image = $star ? "image/star-on.gif" : "image/star-off.gif";
-		
+	
 	$unread = in_array("unread", $tags) ? true : false;
 ?>
-
+<span class="meta date-time"><?php echo $item_published ?></span>
 <div class="header">
 
-	<span class="controls">
-		<a class='uparrow' href='javascript:hide_body("<?php echo $item_id ?>")'>&uarr;</a>
-		<a class='downarrow' href='javascript:show_body("<?php echo $item_id ?>")'>&darr;</a>
+	<div class="controls">
+		<a class='uparrow' href='javascript:hide_body("<?php echo $item_id ?>")' title="Hide item"><img height="16" width="16" src="image/u_arrow.gif" /></a>
+		<a class='downarrow' href='javascript:show_body("<?php echo $item_id ?>")' title="Expand item"><img height="16" width="16" src="image/d_arrow.gif" /></a>
 		<input
 			type="checkbox"
 			name="c<?php echo $item_id ?>"
@@ -96,12 +99,14 @@ function fof_render_item($item)
             onclick='return checkbox(event);'
 			title='shift-click or double-click to flag all items up to this one'
 		/>
-	</span>
+	</div>
 	
-	<h1 <?php if($unread) echo "class='unread-item'" ?> >
+	<h2 <?php if($unread) echo "class='unread-item'" ?> >
 		<img
+			class="favorite"
 			height="16"
 			width="16"
+			title="Set favorite item"
 			src="<?php echo $star_image ?>"
 			id="fav<?php echo $item_id ?>"
 			onclick="return toggle_favorite('<?php echo $item_id ?>')"
@@ -109,10 +114,10 @@ function fof_render_item($item)
 		<script>
 			document.getElementById('fav<?php echo $item_id ?>').star = <?php if($star) echo 'true'; else echo 'false'; ?>;
 		</script>
-		<a href="<?php echo $item_link ?>">
+		<a href="<?php echo $item_link ?>" target="_BLANK">
 			<?php echo $item_title ?>
 		</a>
-	</h1>
+	</h2>
 	
 	<span class="tags">
 
@@ -163,12 +168,12 @@ function fof_render_item($item)
     <h2>
 
     <?php $prefs = fof_prefs(); if($feed_image && $prefs['favicons']) { ?>
-    <a href="<?php echo $feed_link ?>" title='<?php echo $feed_description ?>'><img src="<?php echo $feed_image ?>" height="16" width="16" border="0" /></a>
+    <a href="<?php echo $feed_link ?>" title='<?php echo $feed_description ?>' target="_BLANK"><img src="<?php echo $feed_image ?>" height="16" width="16" border="0" /></a>
     <?php } ?>
-    <a href="<?php echo $feed_link ?>" title='<?php echo $feed_description ?>'><?php echo $feed_title ?></a>
+    <a href="<?php echo $feed_link ?>" title='<?php echo $feed_description ?>' target="_BLANK"><?php echo $feed_title ?></a>
     </h2>
 
-	<span class="meta">on <?php echo $item_published ?></span>
+	<!--span class="meta">on <?php echo $item_published ?></span-->
 
 </div>
 

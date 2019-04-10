@@ -6,7 +6,7 @@ fof_add_pref('WordPress URL', 'plugin_wordpressurl');
 function fof_wordpress($item)
 {
     $prefs = fof_prefs();
-    $wordpress = $prefs['plugin_wordpressurl'];
+    $wordpress = (isset($prefs['plugin_wordpressurl']) ? $prefs['plugin_wordpressurl'] : 0);
     
     if(!$wordpress) return false;
     

@@ -4,6 +4,11 @@ p
     padding: 5px;
 }
 
+img
+{
+	max-width: 100%;
+}
+
 .clearer
 {
     clear: both;
@@ -19,6 +24,8 @@ p
 {
     background: #dddddd;
     padding: 5px;
+    display: block;
+    overflow: hidden;
 }
 
 .widgets
@@ -28,6 +35,11 @@ p
     font-size: 12px;
     padding: 4px;
     text-align: right;
+}
+
+.align-right
+{
+	text-align: right;
 }
 
 .widget
@@ -89,10 +101,17 @@ p
     text-decoration: none;
 }
 
+.main-heading
+{
+	text-align: center;
+	font-family: arial;
+	margin-top: 20px;
+}
 .heading
 {
     background: #ccc;
     border-bottom: 1px solid grey;
+	padding-left: 20px;
 }
 
 #sidebar td
@@ -101,6 +120,38 @@ p
     padding: 2px;
 }
 
+#sidebar table.taglist td.number
+{
+	width: 15px;
+}
+
+#sidebar table.taglist td.all
+{
+	width: 35px;
+}
+
+#sidebar table.taglist td.tag-name
+{
+	
+	
+}
+
+#sidebar table.taglist td.delete-tag
+{
+	width:30px;
+	text-align:center;
+	
+}
+
+#sidebar table.taglist tr:hover { 
+
+	
+}
+
+#sidebar table.taglist td a { 
+   display: block; 
+   text-decoration: none;
+}
 
 .odd-row
 {
@@ -230,9 +281,28 @@ body
 
 .controls
 {
-    float: right;
+	float: right;
+	display: block;
+	overflow: hidden;
+	margin-left: 10px;
 }
 
+.controls > input
+{
+	margin-bottom: 0px;
+	vertical-align: bottom;
+}
+
+.controls > a
+{
+	margin-bottom: 0px;
+	padding-bottom: 0px;
+}
+
+.favorite
+{
+	cursor: pointer;
+}
 .tags
 {
     font-size: 70%;
@@ -306,36 +376,62 @@ padding: 5px 7px;
 
 #item-display-controls
 {
-font: normal 10px Verdana;
-position: fixed;
-top: 0;
-left: 0;
-right: 0;
-margin: 0;
-padding: 0 5px;
-background: #ddd;
-border-bottom: 1px solid #666;
-z-index: 1;
+	font-style: normal;
+	font-size: 10px;
+	font-family: arial, helvetica;;
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	margin: 0;
+	padding: 0 5px;
+	background: #dddddd;
+	border-bottom: 1px solid #666666;
+	z-index: 1;
 }
 
 #item-display-controls li
 {
-padding: 5px 4px;
+	padding: 5px 4px;
+	border: 2px solid;
+	border-right-color: #999999;
+	border-bottom-color: #999999;
+	border-left-color: #cccccc;
+	border-top-color: #cccccc;
+	cursor: pointer;
 }
 
 #item-display-controls li a
 {
-padding: 0;
+	padding: 0;
+	text-decoration: none;
+	color: #333333;
 }
+
+#item-display-controls li:active
+{
+	background: #333333;
+	color: #dddddd;
+	border-left-color: #999999;
+	border-top-color: #999999;
+	border-right-color: #cccccc;
+	border-bottom-color: #cccccc;
+}
+
+#item-display-controls li a:active
+{
+	color: #dddddd;
+}
+
 
 #item-display-controls-spacer
 {
-font: normal 10px Verdana;
-top: 0;
-left: 0;
-right: 0;
-margin: 0;
-padding: 0;
+	font: normal 10px Verdana;
+	top: 0;
+	left: 0;
+	right: 0;
+	margin: 0;
+	padding: 0;
 }
 
 #item-display-controls-spacer li
@@ -375,3 +471,116 @@ display: block;
 padding: 2px 5px;
 }
 
+.column-one
+{
+	clear: left;
+	display: inline-block;
+}
+.column-two
+{
+	clear: right;
+	display: inline-block;
+}
+.prefs-row
+{
+	padding-bottom: 20px;
+}
+
+.prefs-row.table
+{
+	display: table;
+	height: 50px;
+}
+
+.prefs-row.table.Feeds-and-Tags .column-one.table-cell,
+.prefs-row.table.Feeds-and-Tags .column-two.table-cell
+{
+	vertical-align: middle;
+}
+
+.prefs-row.table-row
+{
+	display: table-row;
+	height: 50px;
+}
+
+.column-one.table-cell
+{
+	display: table-cell;
+}
+.column-two.table-cell
+{
+	padding-left: 20px;
+	display: table-cell;
+}
+.column-three.table-cell
+{
+	padding-left: 20px;
+	display: table-cell;
+}
+.column-four.table-cell
+{
+	white-space: nowrap;
+}
+div.nav-links
+{
+	text-align: center;
+	display: block;
+	clear: both;
+}
+div.nav-links > a
+{
+	border: 2px solid;
+	border-right-color: #999999;
+	border-bottom-color: #999999;
+	border-left-color: #cccccc;
+	border-top-color: #cccccc;
+	text-decoration: none;
+	color: #333333;
+	background-color: #dddddd;
+	padding-top: 2px;
+	padding-bottom: 2px;
+	padding-left: 3px;
+	padding-right: 3px;
+	display: inline-block;
+}
+
+div.nav-links > a:active
+{
+	border: 2px solid;
+	background: #333333;
+	color: #dddddd;
+	border-left-color: #999999;
+	border-top-color: #999999;
+	border-right-color: #cccccc;
+	border-bottom-color: #cccccc;
+
+}
+div.date-item-published
+{
+	text-align: center;
+	background-color: #dddddd;
+	font-weight: bold;
+	padding: 5px;
+	display: block;
+	margin-top: 10px;
+}
+.stared
+{
+	color: red;
+}
+
+.container
+{
+	border: 1px solid black; 
+	margin: 10px; 
+	padding: 10px; 
+	font-size: 12px; 
+	font-family: verdana, arial;
+	display: block;
+}
+
+.input.small-number
+{
+	width: 20px;
+}

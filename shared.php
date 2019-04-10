@@ -127,8 +127,8 @@ else
 {
 header("Content-Type: text/html; charset=utf-8");
 ?>
-<!DOCTYPE html>
-<html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
 
    <head>
       <link rel="alternate" href="<?php echo $shared_feed?>" type="application/atom+xml"/>
@@ -145,6 +145,10 @@ header("Content-Type: text/html; charset=utf-8");
           padding: 1em;
           text-align: center;
       }
+      img
+      {
+	  	max-width: 100%;
+	  }
       </style>
 
    </head>
@@ -171,7 +175,14 @@ foreach($result as $item)
     
     $feed_link = $item['feed_link'];
 	$feed_title = $item['feed_title'];
-	$feed_image = $item['feed_image'];
+	if(strlen($item['feed_image']) && $prefs->get('favicons'))
+	{
+		$feed_image = $item['feed_image'];
+	}
+	else
+	{
+		$feed_image = "image/feed-icon.png";
+	}
 	$feed_description = $item['feed_description'];
 
 	$item_link = $item['item_link'];
@@ -201,7 +212,8 @@ foreach($result as $item)
     
     <h2>
 
-    <a href="<?php echo $feed_link ?>" title='<?php echo $feed_description ?>'><img src="<?php echo $feed_image ?>" height="16" width="16" border="0" /></a>
+    <a href="<?php echo $feed_link ?>" title='<?php echo $feed_description ?>'>
+	<img src="<?php echo $feed_image ?>" height="16" width="16" border="0" /></a>
     <a href="<?php echo $feed_link ?>" title='<?php echo $feed_description ?>'><?php echo $feed_title ?></a>
 
     </h2>

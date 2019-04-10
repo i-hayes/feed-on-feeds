@@ -610,6 +610,7 @@ function show_hide_all(e)
 		{
 			items[i].className = "item " + e;
 		}
+		document.cookie = "colapse="+e;
 	}
 }
 
@@ -863,7 +864,7 @@ function continueupdate()
     }
     else
     {
-        new Insertion.Bottom($('items'), '<br>Update complete!');
+        new Insertion.Bottom($('items'), '</br>Update complete!</br>');
         refreshlist();
     }
 }

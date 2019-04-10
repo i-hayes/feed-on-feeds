@@ -4,6 +4,7 @@ fof_add_item_prefilter('fof_enclosures');
 
 function fof_enclosures($item, $link, $title, $content)
 {
+	$html = "";
     if ($enclosure = $item->get_enclosure(0))
     {
         $html = '<br><br><a href="#" onclick="show_enclosure(event); return false;">show enclosure</a><div style="display: none" align="center" width="auto">';

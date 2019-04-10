@@ -14,8 +14,9 @@
 
 include_once("fof-main.php");
 
-$prefs =& FoF_Prefs::instance();
-
+$FoF_Prefs = new FoF_Prefs("");
+$prefs = $FoF_Prefs->instance();
+$message = "";
 if(fof_is_admin() && isset($_POST['adminprefs']))
 {
 	$prefs->set('purge', $_POST['purge']);
@@ -61,9 +62,14 @@ if(isset($_GET['untagfeed']))
 
 if(isset($_POST['prefs']))
 {
-	$prefs->set('favicons', isset($_POST['favicons']));
-	$prefs->set('keyboard', isset($_POST['keyboard']));
+	$prefs->set('favicons', (isset($_POST['favicons']) ? 1: 0));
+	$prefs->set('keyboard', (isset($_POST['keyboard']) ? 1: 0));
+	$prefs->set('new_page', (isset($_POST['new_page']) ? 1: 0));
+	$prefs->set('colapse', (isset($_POST['colapse']) ? 1 : 0));
 	$prefs->set('tzoffset', intval($_POST['tzoffset']));
+	$prefs->set('tformat', $_POST['tformat']);
+	$prefs->set('dsformat', $_POST['dsformat']);
+	$prefs->set('dlformat', $_POST['dlformat']);
 	$prefs->set('howmany', intval($_POST['howmany']));
 	$prefs->set('order', $_POST['order']);
 	$prefs->set('sharing', $_POST['sharing']);
@@ -71,7 +77,7 @@ if(isset($_POST['prefs']))
 	$prefs->set('sharedurl', $_POST['sharedurl']);
 
 	$prefs->save(fof_current_user());
-    
+    $message = "";
     if($_POST['password'] && ($_POST['password'] == $_POST['password2']))
     {
         fof_db_change_password($fof_user_name, $_POST['password']);
@@ -98,7 +104,7 @@ if(isset($_POST['plugins']))
     $dirlist = opendir(FOF_DIR . "/plugins");
     while($file=readdir($dirlist))
     {
-        if(ereg('\.php$',$file))
+        if(strpos($file, '.php'))
         {
            $plugins[] = substr($file, 0, -4);
         }
@@ -108,7 +114,7 @@ if(isset($_POST['plugins']))
         
     foreach($plugins as $plugin)
     {
-        $prefs->set("plugin_" . $plugin, $_POST[$plugin] != "on");
+        $prefs->set("plugin_" . $plugin, (isset($_POST[$plugin]) ? 0 : 1));
     }
 
 	$prefs->save(fof_current_user());
@@ -116,86 +122,165 @@ if(isset($_POST['plugins']))
 	$message .= ' Saved plugin prefs.';
 }
 
-if(isset($_POST['changepassword'])) 
+if(fof_is_admin() && isset($_POST['changepassword'])) 
 {
-    if($_POST['password'] != $_POST['password2'])
-    {
-        $message = "Passwords do not match!";
-    }
-    else
-    {
-        $username = $_POST['username'];
-        $password = $_POST['password'];
-        fof_db_change_password($username, $password);
-        
-        $message = "Changed password for $username.";
-    }
+	if($_POST['password'] != $_POST['password2'])
+	{
+		$message = "Passwords do not match!";
+	}
+	else
+	{
+		fof_db_change_password(fof_db_get_user_id($_POST['username']), $_POST['password']);
+		$message = "Changed password for '".$_POST['username']."'.";
+	}
 }
 
 if(fof_is_admin() && isset($_POST['adduser']) && $_POST['username'] && $_POST['password']) 
 {
-    $username = $_POST['username'];
-    $password = $_POST['password'];
-
-	fof_db_add_user($username, $password);
-	$message = "User '$username' added.";
+	fof_db_add_user($_POST['username'], $_POST['password']);
+	$message = "User '".$_POST['username']."' added.";
 }
 
 
 if(fof_is_admin() && isset($_POST['deleteuser']) && $_POST['username'])
 {
-	$username = $_POST['username'];
-	
-	fof_db_delete_user($username);
-	$message = "User '$username' deleted.";
+	fof_db_delete_user($_POST['username']);
+	$message = "User '".$_POST['username']."' deleted.";
 }
 
-include("header.php");
+
+?>
+<div id="items">
+
+<?php if(strlen($message)) { ?>
+<script>
+Document.onLoad = setTimeout(hideMessage, 10000);
+
+function hideMessage() 
+{
+	document.getElementById("message").style.display = "none"; 
+}
+
+</script>
+<div id="message" class="stared"><?php echo $message ?></div>
+
+<?php }
 
 ?>
 
-<?php if(isset($message)) { ?>
+<div class="main-heading"><h1>Feed on Feeds</h1></div>
+<div class="heading"><h2>Preferences</h2></div>
+<div class="container">
+  <form method="post" action="<?php print (FOF_BASEDIR); ?>?prefs=1">
+    <div class="prefs-row">
+      <div class="column-one">Default display order:</div>
+      <div class="column-two">
+        <select name="order">
+          <option value=desc>new to old</option>
+          <option value=asc <?php if($prefs->get('order') == "asc") echo "selected";?>>old to new</option>
+        </select>
+      </div>
+    </div>
+    <div class="prefs-row">
+      <div class="column-one">Condensed display by default</div>
+      <div class="column-two"><input class="input checkbox" id="new_page" type="checkbox" name="colapse" value="1"<?php if($prefs->get('colapse')) echo " checked=checked";?> /></div>
+    </div>
+    <div class="prefs-row">
+      <div class="column-one">Number of items in paged displays:</div>
+      <div class="column-two"><input class="input small-number" id="howmany" type="string" name="howmany" value="<?php echo $prefs->get('howmany') ?>"></div>
+    </div>
+    <div class="prefs-row">
+      <div class="column-one">Open website in new window or tab</div>
+      <div class="column-two"><input class="input checkbox" id="new_page" type="checkbox" name="new_page" value="1"<?php if($prefs->get('new_page')) echo " checked=checked";?> /></div>
+    </div>
+    <div class="prefs-row">
+      <div class="column-one">Display custom feed favicons?</div>
+      <div class="column-two"><input class="input checkbox" id="favicons" type="checkbox" name="favicons" value="1" <?php if($prefs->get('favicons')) echo " checked=checked";?> /></div>
+    </div>
+    <div class="prefs-row">
+      <div class="column-one">Use keyboard shortcuts?</div>
+      <div class="column-two"><input class="input checkbox" id="keyboard" type="checkbox" name="keyboard" value="1" <?php if($prefs->get('keyboard')) echo " checked=checked";?> /></div>
+    </div>
+    <div class="prefs-row">
+      <div class="column-one">Time offset in hours:</div>
+      <div class="column-two"><input class="input small-number" id="tzoffset" type=string name=tzoffset value="<?php echo $prefs->get('tzoffset')?>" /> (UTC time: <?php echo gmdate($prefs->get('dsformat')." ".$prefs->get('tformat')) ?>, local time: <?php echo gmdate($prefs->get('dsformat')." ".$prefs->get('tformat'), time() + $prefs->get("tzoffset")*60*60) ?>)</div>
+    </div>
+    <div class="prefs-row">
+      <div class="column-one">Time format:</div>
+      <div class="column-two">
+        <select name="tformat">
+          <option value="g:ia"<?php print (($prefs->get('tformat') == "g:ia" ? " selected=\"selected\"" : "")); ?>>12 hour</option>
+          <option value="G:i"<?php print (($prefs->get('tformat') == "G:i" ? " selected=\"selected\"" : "")); ?>>24 hour</option>
+		</select>
+      </div>
+    </div>
+    <div class="prefs-row">
+      <div class="column-one">Date short format</div>
+      <div class="column-two">
+<?php 
+$date_format = array("Y-n-d", "d-n-Y", "Y/n/d", "d/n/Y", "Y.n.d", "d.n.Y");
+print (date_select("dsformat", $prefs->get('dsformat'), $date_format, $script = NULL));
+print (" current: ".date($prefs->get('dsformat')));
+?>
+	  </div>
+    </div>
+    <div class="prefs-row">
+      <div class="column-one">Date Long format</div>
+      <div class="column-two">
+<?php 
+$date_format = array("dS M Y", "dS F Y", "l, jS F, Y", "D, jS F, Y", "l, F j, Y", "D, F j, Y");
+print (date_select("dlformat", $prefs->get('dlformat'), $date_format, $script = NULL));
+print (" current: ".date($prefs->get('dlformat')));
+?>
+      </div>
+    </div>
+    <div class="prefs-row table">
+      <div class="prefs-row table-row">
+        <div class="column-one table-cell">New password:</div>
+        <div class="column-two table-cell"><input type=password name=password> (leave blank to not change)</div>
+      </div>
+      <div class="prefs-row table-row">
+        <div class="column-one table-cell">Repeat new password:</div>
+        <div class="column-two table-cell"><input type=password name=password2></div>
+      </div>
+    </div>
+    <div class="prefs-row">
+      <div class="column-one">Share</div>
+      <div class="column-two"> 
+        <select name="sharing">
+          <option value=no>no</option>
+          <option value=all <?php if($prefs->get('sharing') == "all") echo "selected";?>>all</option>
+          <option value=tagged <?php if($prefs->get('sharing') == "tagged") echo "selected";?>>tagged as "shared"</option>
+        </select>
+        items.
+<?php if($prefs->get('sharing') != "no") echo "        <small><i>(your shared page is <a href='./shared.php?user=".fof_current_user()."'>here</a>)</i></small>\n";?>
+      </div>
+    </div>
+    <div class="prefs-row">
+      <div class="column-one">Name to be shown on shared page:</div>
+      <div class="column-two"><input type="string" name="sharedname" value="<?php echo $prefs->get('sharedname')?>"></div>
+    </div>
+    <div class="prefs-row">
+      <div class="column-one">URL to be linked on shared page:</div>
+      <div class="column-two"><input type="string" name="sharedurl" value="<?php echo $prefs->get('sharedurl')?>"></div>
+	</div>
+    <div class="prefs-row">
+      <div class="column-one"><input type="submit" name="prefs" value="Save Preferences"></div>
+      <div class="column-two"></div>
+    </div>
+  </form>
+</div>
 
-<br><font color="red"><?php echo $message ?></font><br>
-
-<?php } ?>
-
-<br><h1>Feed on Feeds - Preferences</h1>
-<form method="post" action="prefs.php" style="border: 1px solid black; margin: 10px; padding: 10px;">
-Default display order: <select name="order"><option value=desc>new to old</option><option value=asc <?php if($prefs->get('order') == "asc") echo "selected";?>>old to new</option></select><br><br>
-Number of items in paged displays: <input type="string" name="howmany" value="<?php echo $prefs->get('howmany') ?>"><br><br>
-Display custom feed favicons? <input type="checkbox" name="favicons" <?php if($prefs->get('favicons')) echo "checked=true";?> ><br><br>
-Use keyboard shortcuts? <input type="checkbox" name="keyboard" <?php if($prefs->get('keyboard')) echo "checked=true";?> ><br><br>
-Time offset in hours: <input size=3 type=string name=tzoffset value="<?php echo $prefs->get('tzoffset')?>"> (UTC time: <?php echo gmdate("Y-n-d g:ia") ?>, local time: <?php echo gmdate("Y-n-d g:ia", time() + $prefs->get("tzoffset")*60*60) ?>)<br><br>
-<table border=0 cellspacing=0 cellpadding=2><tr><td>New password:</td><td><input type=password name=password> (leave blank to not change)</td></tr>
-<tr><td>Repeat new password:</td><td><input type=password name=password2></td></tr></table>
-<br>
-
-Share 
-<select name="sharing">
-<option value=no>no</option>
-<option value=all <?php if($prefs->get('sharing') == "all") echo "selected";?>>all</option>
-<option value=tagged <?php if($prefs->get('sharing') == "tagged") echo "selected";?>>tagged as "shared"</option>
-</select>
-items.
-<?php if($prefs->get('sharing') != "no") echo " <small><i>(your shared page is <a href='./shared.php?user=$fof_user_id'>here</a>)</i></small>";?><br><br>
-Name to be shown on shared page: <input type=string name=sharedname value="<?php echo $prefs->get('sharedname')?>"><br><br>
-URL to be linked on shared page: <input type=string name=sharedurl value="<?php echo $prefs->get('sharedurl')?>">
-<br><br>
-
-<input type=submit name=prefs value="Save Preferences">
-</form>
-
-<br><h1>Feed on Feeds - Plugin Preferences</h1>
-<form method="post" action="prefs.php" style="border: 1px solid black; margin: 10px; padding: 10px;">
-
+<div class="heading"><h2>Plugin Preferences</h2></div>
+<div class="container">
+  <form method="post" action="<?php print (FOF_BASEDIR); ?>?prefs=1">
 <?php
     $plugins = array();
     $dirlist = opendir(FOF_DIR . "/plugins");
     while($file=readdir($dirlist))
     {
     	fof_log("considering " . $file);
-        if(ereg('\.php$',$file))
+        if(strpos($file, '.php'))
         {
            $plugins[] = substr($file, 0, -4);
         }
@@ -204,142 +289,227 @@ URL to be linked on shared page: <input type=string name=sharedurl value="<?php 
     closedir();
 
 ?>
-
+    <div class="prefs-row">
+      <div class="column-one">
 <?php foreach($plugins as $plugin) { ?>
-<input type=checkbox name=<?php echo $plugin ?> <?php if(!$prefs->get("plugin_" . $plugin)) echo "checked"; ?>> Enable plugin <tt><?php echo $plugin?></tt>?<br>
+        <div><input type=checkbox name=<?php echo $plugin ?> <?php if(!$prefs->get("plugin_" . $plugin)) echo "checked=\"checked\""; ?>> Enable plugin <tt><?php echo $plugin?></tt>?</div>
 <?php } ?>
+      </div>
+      <div class="column-two"> </div>
+	</div>
 
-<br>
 <?php foreach(fof_get_plugin_prefs() as $plugin_pref) { $name = $plugin_pref[0]; $key = $plugin_pref[1]; $type = $plugin_pref[2]; ?>
 <?php echo $name ?>: 
 
 <?php if($type == "boolean") { ?>
-<input name="<?php echo $key ?>" type="checkbox" <?php if($prefs->get($key)) echo "checked" ?>><br>
+    <div class="prefs-row">
+      <div class="column-one">
+        <input name="<?php echo $key ?>" type="checkbox" <?php if($prefs->get($key)) echo "checked" ?>>
+      </div>
+      <div class="column-two"> </div>
+	</div>
 <?php } else { ?>
-<input name="<?php echo $key ?>" value="<?php echo $prefs->get($key)?>"><br>
+    <div class="prefs-row">
+      <div class="column-one">
+        <input name="<?php echo $key ?>" value="<?php echo $prefs->get($key)?>">
+      </div>
+      <div class="column-two"> </div>
+	</div>
 <?php } } ?>
-<br>
-<input type=submit name=plugins value="Save Plugin Preferences">
-</form>
+    <div class="prefs-row">
+      <div class="column-one">
+        <input type=submit name=plugins value="Save Plugin Preferences">
+      </div>
+      <div class="column-two"> </div>
+	</div>
+  </form>
+</div>
 
-    
-    
-<br><h1>Feed on Feeds - Feeds and Tags</h1>
-<div style="border: 1px solid black; margin: 10px; padding: 10px; font-size: 12px; font-family: verdana, arial;">
-<table cellpadding=3 cellspacing=0>
+
+<div class="heading"><h2>Feeds and Tags</h2></div>
+<div class="container">
+  <div class="prefs-row table Feeds-and-Tags">
+ 
 <?php
 foreach($feeds as $row)
 {
-   $id = $row['feed_id'];
-   $url = $row['feed_url'];
-   $title = $row['feed_title'];
-   $link = $row['feed_link'];
-   $description = $row['feed_description'];
-   $age = $row['feed_age'];
-   $unread = $row['feed_unread'];
-   $starred = $row['feed_starred'];
-   $items = $row['feed_items'];
-   $agestr = $row['agestr'];
-   $agestrabbr = $row['agestrabbr'];
-   $lateststr = $row['lateststr'];
-   $lateststrabbr = $row['lateststrabbr'];   
-   $tags = $row['tags'];
-   
-   if(++$t % 2)
-   {
-      print "<tr class=\"odd-row\">";
-   }
-   else
-   {
-      print "<tr>";
-   }
+//   $id = $row['feed_id'];
+//   $url = $row['feed_url'];
+//   $title = $row['feed_title'];
+//   $link = $row['feed_link'];
+//   $description = $row['feed_description'];
+//   $age = $row['feed_age'];
+//   $unread = $row['feed_unread'];
+//   $starred = $row['feed_starred'];
+//   $items = $row['feed_items'];
+//   $agestr = $row['agestr'];
+//   $agestrabbr = $row['agestrabbr'];
+//   $lateststr = $row['lateststr'];
+//   $lateststrabbr = $row['lateststrabbr'];   
+	$tags = $row['tags'];
+    print ("    <div class=\"prefs-row table-row".(++$t % 2 ? " odd-row" : "")."\">\n");
 
-   if($row['feed_image'] && $prefs->get('favicons'))
-   {
-	   print "<td><a href=\"$url\" title=\"feed\"><img src='" . $row['feed_image'] . "' width='16' height='16' border='0' /></a></td>";
-   }
-   else
-   {
-	   print "<td><a href=\"$url\" title=\"feed\"><img src='image/feed-icon.png' width='16' height='16' border='0' /></a></td>";
-   }
-    
-   print "<td><a href=\"$link\" title=\"home page\">$title</a></td>";
-   
-   print "<td align=right>";
-   
-   if($tags)
-   {
-       foreach($tags as $tag)
-       {
-           $utag = urlencode($tag);
-           $utitle = urlencode($title);
-           print "$tag <a href='prefs.php?untagfeed=$id&tag=$utag&title=$utitle'>[x]</a> ";
-       }
-   }
-   else
-   {
-   }
-   
-   print "</td>";
-   $title = htmlspecialchars($title);
-   print "<td><form method=post action=prefs.php><input type=hidden name=title value=\"$title\"><input type=hidden name=feed_id value=$id><input type=string name=tag> <input type=submit name=tagfeed value='Tag Feed'> <small><i>(separate tags with spaces)</i></small></form></td></tr>";
+    if($row['feed_image'] && $prefs->get('favicons'))
+	{
+		$image = $row['feed_image'];
+	}
+	else
+	{
+		$image = 'image/feed-icon.png';
+	}
+	print "      <div class=\"column-one table-cell\">\n";
+	print "        <a href=\"".$row['feed_url']."\" title=\"feed\"><img src='$image' width='16' height='16' border='0' /></a>\n";
+	print "      </div>\n";
+	print "      <div class=\"column-two table-cell\">\n";
+	print "        <a href=\"".$row['feed_link']."\" title=\"home page\">".$row['feed_title']."</a>\n";
+	print "      </div>\n";
+	print "      <div class=\"column-three table-cell align-right\">\n";
+
+	if($row['tags'])
+	{
+		foreach($row['tags'] as $tag)
+		{
+			print "        $tag <a href=\"".FOF_BASEDIR."?prefs=1&untagfeed=".$row['feed_id']."&tag=". urlencode($tag)."&title=".urlencode($row['feed_title'])."\">[x]</a>\n ";
+		}
+	}
+	print "      </div>\n";
+	print "      <div class=\"column-four table-cell\">\n";
+	print "        <form method=\"post\" action=\"".FOF_BASEDIR."?prefs=1\">\n";
+	print "          <input type=\"hidden\" name=\"title\" value=\"".htmlspecialchars($row['feed_title'])."\">\n";
+	print "          <input type=\"hidden\" name=\"feed_id\" value=".$row['feed_id'].">\n";
+	print "          <input type=\"string\" name=\"tag\"><input type=\"submit\" name=\"tagfeed\" value=\"Tag Feed\">\n";
+	print "        </form>\n";
+	print "        <div><small><i>(separate tags with spaces)</i></small></div>\n";
+	print "      </div>\n";
+	print ("    </div>\n");
 }
 ?>
-</table>
+  </div>
 </div>
 
 
 <?php if(fof_is_admin()) { ?>
 
-<br><h1>Feed on Feeds - Admin Options</h1>
-<form method="post" action="prefs.php" style="border: 1px solid black; margin: 10px; padding: 10px;">
-Enable logging? <input type=checkbox name=logging <?php if($prefs->get('logging')) echo "checked" ?>><br><br>
-Purge read items after <input size=4 type=string name=purge value="<?php echo $prefs->get('purge')?>"> days (leave blank to never purge)<br><br>
-Allow automatic feed updates every <input size=4 type=string name=autotimeout value="<?php echo $prefs->get('autotimeout')?>"> minutes<br><br>
-Allow manual feed updates every <input size=4 type=string name=manualtimeout value="<?php echo $prefs->get('manualtimeout')?>"> minutes<br><br>
-<input type=submit name=adminprefs value="Save Options">
-</form>
+<div class="heading"><h2>Admin Options</h2></div>
+<div class="container">
+  <form method="post" action="<?php print (FOF_BASEDIR);?>?prefs=1">
+    <div class="prefs-row">
+      <div class="column-one">Enable logging? </div>
+      <div class="column-two"><input type=checkbox name=logging <?php if($prefs->get('logging')) echo "checked" ?>></div>
+    </div>
+    <div class="prefs-row">
+      <div class="column-one">Purge read items after </div>
+      <div class="column-two"><input class="input small-number" id="purge" type=string name=purge value="<?php echo $prefs->get('purge')?>"> days (leave blank to never purge)</div>
+    </div>
+    <div class="prefs-row">
+      <div class="column-one">Allow automatic feed updates every </div>
+      <div class="column-two"><input class="input small-number" id="autotimeout" type=string name=autotimeout value="<?php echo $prefs->get('autotimeout')?>"> minutes</div>
+    </div>
+    <div class="prefs-row">
+      <div class="column-one">Allow manual feed updates every </div>
+      <div class="column-two"><input class="input small-number" id="manualtimeout" type=string name=manualtimeout value="<?php echo $prefs->get('manualtimeout')?>"> minutes</div>
+    </div>
+    <div class="prefs-row">
+      <div class="column-one"><input type=submit name=adminprefs value="Save Options"></div>
+      <div class="column-two"> </div>
+    </div>
+  </form>
+</div>
 
-<br><h1>Add User</h1>
-<form method="post" action="prefs.php" style="border: 1px solid black; margin: 10px; padding: 10px;">
-Username: <input type=string name=username> Password: <input type=string name=password> <input type=submit name=adduser value="Add user">
-</form>
+<div class="heading"><h2>Admin Options - Add User</h2></div>
+<div class="container">
+  <form method="post" action="<?php print (FOF_BASEDIR);?>?prefs=1">
+    <div class="prefs-row">
+      <div class="column-one">Username: <input type=string name=username></div>
+      <div class="column-two">
+      Password: <input type=string name=password>
+      <input type=submit name=adduser value="Add user"></div>
+	</div>
+  </form>
+</div>
 
 <?php
-	$result = fof_db_query("select user_name from $FOF_USER_TABLE where user_id > 1");
-	
+	$result = fof_db_query("select user_name from `".FOF_USER_TABLE."` where user_id > 1");
+	$delete_options = "";
 	while($row = fof_db_get_row($result))
 	{
 		$username = $row['user_name'];
-		$delete_options .= "<option value=$username>$username</option>";
+		$delete_options .= "        <option value=\"$username\">$username</option>\n";
 	}
 
-    if(isset($delete_options))
+    if(strlen($delete_options))
     {
 ?>
 
-<br><h1>Delete User</h1>
-<form method="post" action="prefs.php" style="border: 1px solid black; margin: 10px; padding: 10px;" onsubmit="return confirm('Delete User - Are you sure?')">
-<select name=username><?php echo $delete_options ?></select>
-<input type=submit name=deleteuser value="Delete user"><br>
-</form>
+<div class="heading"><h2>Admin Options - Delete User</h2></div>
+<div class="container">
+  <form method="post" action="<?php print (FOF_BASEDIR);?>?prefs=1" onsubmit="return confirm('Delete User - Are you sure?')">
+    <div class="prefs-row">
+      <div class="column-one">
+        <select name="username">
+<?php echo $delete_options ?>
+        </select>
+      </div>
+      <div class="column-two"><input type=submit name=deleteuser value="Delete user"></div>
+    </div>
+  </form>
+</div>
 
-<br><h1>Change User's Password</h1>
-<form method="post" action="prefs.php" style="border: 1px solid black; margin: 10px; padding: 10px;" onsubmit="return confirm('Change Password - Are you sure?')">
-<table border=0 cellspacing=0 cellpadding=2>
-<tr><td>Select user:</td><td><select name=username><?php echo $delete_options ?></select></td></tr>
-<tr><td>New password:</td><td><input type=password name=password></td></tr>
-<tr><td>Repeat new password:</td><td><input type=password name=password2></td></tr></table>
-<input type=submit name=changepassword value="Change"><br>
-</form>
+<div class="heading"><h2>Admin Options - Change User's Password</h2></div>
+<div class="container">
+  <form method="post" action="<?php print (FOF_BASEDIR);?>?prefs=1" onsubmit="return confirm('Change Password - Are you sure?')">
+    <div class="prefs-row table">
+      <div class="prefs-row table-row">
+        <div class="column-one table-cell">Select user:</div>
+        <div class="column-two table-cell">
+          <select name=username>
+<?php echo $delete_options ?>
+          </select>
+        </div>
+      </div>
+      <div class="prefs-row table-row">
+        <div class="column-one table-cell">New password:</div>
+        <div class="column-two table-cell"><input type="password" name="password"></div>
+      </div>
+      <div class="prefs-row table-row">
+        <div class="column-one table-cell">Repeat new password:</div>
+        <div class="column-two table-cell"><input type="password" name="password2"></div>
+      </div>
+      <div class="prefs-row table-row">
+        <div class="column-one table-cell"><input type="submit" name="changepassword" value="Change"></div>
+        <div class="column-two table-cell"></div>
+      </div>
+    </div>
+  </form>
+</div>
 
 <?php } ?>
 
-<br>
-<form method="get" action="uninstall.php" onsubmit="return confirm('Really?  This will delete all the database tables!')">
-<center><input type=submit name=uninstall value="Uninstall Feed on Feeds" style="background-color: #ff9999"></center>
-</form>
+<div class="heading"><h2>Admin Options - Uninstall Feed on Feeds</h2></div>
+<div class="container">
+  <form method="get" action="uninstall.php" onsubmit="return confirm('Really?  This will delete all the database tables!')">
+    <div class="prefs-row">
+      <div class="column-one">
+        <center><input type="submit" name="uninstall" value="Uninstall Feed on Feeds" style="background-color: #ff9999"></center>
+      </div>
+      <div class="column-two"></div>
+    </div>
+  </form>
+</div>
 
-<?php } ?>
+<?php }
 
-<?php include("footer.php") ?>
+function date_select($name, $prefs, $value, $script = NULL)
+{
+	$return = "        <select name=\"$name\">\n";
+	foreach ($value AS $v)
+	{
+		$return .="          <option value=\"$v\"";
+		if ($prefs == $v) $return .=" selected=\"selected\"";
+		$return .= ">".date($v)."</option>\n";
+	}
+	$return .= "        </select>\n";
+	return $return;
+}
+?>
+
