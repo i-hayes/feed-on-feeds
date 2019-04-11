@@ -617,16 +617,17 @@ function show_hide_all(e)
 function toggle_show(e)
 {
 	items = document.getElementById(e);
+	c = getCookie("fof_prefs_cookie");
 
 	if (items.style.display == "")
 	{
 		items.style.display = "block"; 
-		document.cookie = "fof_prefs_cookie=" + e;
+		if (!c) document.cookie = "fof_prefs_cookie=" + e;
 	}
 	else
 	{
 		items.style.display = "";
-		document.cookie = "fof_prefs_cookie=''; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
+		if (c == e) document.cookie = "fof_prefs_cookie=''; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
 	}
 }
 
