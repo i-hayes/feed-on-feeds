@@ -77,19 +77,30 @@ if(isset($_POST['prefs']))
 	$prefs->set('sharedurl', $_POST['sharedurl']);
 
 	$prefs->save(fof_current_user());
-    $message = "";
-    if($_POST['password'] && ($_POST['password'] == $_POST['password2']))
-    {
-        fof_db_change_password($fof_user_name, $_POST['password']);
-        setcookie ( "user_password_hash",  md5($_POST['password'] . $fof_user_name), time()+60*60*24*365*10 );
-        $message = "Updated password.";
-    }
-    else if($_POST['password'] || $_POST['password2'])
-    {
-        $message = "Passwords do not match!";
-    }
-	
-	$message .= ' Saved prefs.';
+	$message = ' Saved prefs.';
+}
+
+if(isset($_POST['passwd']))
+{
+	if(strlen($_POST['old_password']) && strlen($_POST['new_password']) and strlen($_POST['new_password2']))
+	{
+		if (password_verify($_POST['old_password'], $_SESSION["user_password_hash"]))
+		{
+			if ($_POST['new_password'] == $_POST['new_password2'])
+			{
+				$_SESSION["user_password_hash"] = fof_db_change_password(fof_current_user(), $_POST['password']);
+				$message = "Updated password.";
+			}
+			else
+			{
+				$message = "New passwords do not match.";
+			}
+		}
+		else
+		{
+			$message = "Old password does not match.";
+		}
+	}
 }
 
 if(isset($_POST['plugins']))
@@ -155,13 +166,7 @@ if(fof_is_admin() && isset($_POST['deleteuser']) && $_POST['username'])
 <?php if(strlen($message)) { ?>
 <script>
 Document.onLoad = setTimeout(hideMessage, 10000);
-var cookie = "ddd"; 
-cookie = getCookie("fof_prefs_cookie");
-document.write(cookie);
-if (cookie.length)
-{
-	toggle_show(cookie); 
-}
+refreshlist();
 
 function hideMessage() 
 {
@@ -241,16 +246,6 @@ print (" current: ".date($prefs->get('dlformat')));
 ?>
       </div>
     </div>
-    <div class="prefs-row table">
-      <div class="prefs-row table-row">
-        <div class="column-one table-cell">New password:</div>
-        <div class="column-two table-cell"><input type=password name=password> (leave blank to not change)</div>
-      </div>
-      <div class="prefs-row table-row">
-        <div class="column-one table-cell">Repeat new password:</div>
-        <div class="column-two table-cell"><input type=password name=password2></div>
-      </div>
-    </div>
     <div class="prefs-row">
       <div class="column-one">Share</div>
       <div class="column-two"> 
@@ -273,6 +268,30 @@ print (" current: ".date($prefs->get('dlformat')));
 	</div>
     <div class="prefs-row">
       <div class="column-one"><input type="submit" name="prefs" value="Save Preferences"></div>
+      <div class="column-two"></div>
+    </div>
+  </form>
+</div>
+
+<div class="heading prefs" onClick="toggle_show('passwd');"><h2>Password Change</h2></div>
+<div class="container" id="passwd">
+  <form method="post" action="<?php print (FOF_BASEDIR); ?>?prefs=1">
+    <div class="prefs-row table">
+      <div class="prefs-row table-row">
+        <div class="column-one table-cell">Old password:</div>
+        <div class="column-two table-cell"><input type="password" name="old_password" /> (leave blank to not change)</div>
+      </div>
+      <div class="prefs-row table-row">
+        <div class="column-one table-cell">New password:</div>
+        <div class="column-two table-cell"><input type="password" name="new_password" /></div>
+      </div>
+      <div class="prefs-row table-row">
+        <div class="column-one table-cell">Repeat new password:</div>
+        <div class="column-two table-cell"><input type="password" name="new_password2" /></div>
+      </div>
+    </div>
+    <div class="prefs-row">
+      <div class="column-one"><input type="submit" name="passwd" value="Update Password"></div>
       <div class="column-two"></div>
     </div>
   </form>
@@ -340,19 +359,6 @@ print (" current: ".date($prefs->get('dlformat')));
 <?php
 foreach($feeds as $row)
 {
-//   $id = $row['feed_id'];
-//   $url = $row['feed_url'];
-//   $title = $row['feed_title'];
-//   $link = $row['feed_link'];
-//   $description = $row['feed_description'];
-//   $age = $row['feed_age'];
-//   $unread = $row['feed_unread'];
-//   $starred = $row['feed_starred'];
-//   $items = $row['feed_items'];
-//   $agestr = $row['agestr'];
-//   $agestrabbr = $row['agestrabbr'];
-//   $lateststr = $row['lateststr'];
-//   $lateststrabbr = $row['lateststrabbr'];   
 	$tags = $row['tags'];
     print ("    <div class=\"prefs-row table-row".(++$t % 2 ? " odd-row" : "")."\">\n");
 
