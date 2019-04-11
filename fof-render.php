@@ -71,7 +71,7 @@ function fof_render_item($item)
 
 	if(!$item_title) $item_title = "[no title]";
 	
-	if($_GET['search'])
+	if(isset($_GET['search']) and strlen($_GET['search']))
 	{
 		$item_content = do_highlight("<span>$item_content</span>", $_GET['search'], "highlight");
 		$item_title = do_highlight("<span>$item_title</span>", $_GET['search'], "highlight");
