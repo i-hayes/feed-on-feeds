@@ -36,7 +36,7 @@ $search = $_GET['search'];
 
 echo "<script>what='$what'; when='$when'; session='".session_id()."'</script>";
 
-$feeds = fof_get_feeds(fof_current_user(), $order, $direction);
+$feeds = fof_get_feeds(fof_current_user(), $feedorder, $direction);
 
 foreach($feeds as $row)
 {
@@ -96,8 +96,11 @@ if($n)
 
   <div id="tags">
     <table cellspacing="0" cellpadding="1" border="0" id="taglist" class="taglist">
-      <tr class="heading">
-        <td class="number"><span class="unread">#</span></td><td class="all"></td><td class="tag-name">tag name</td><td class="delete-tag">untag</td>
+      <tr class="heading" onClick="sideBar_show_hide_table('table-tags');">
+        <th class="number"><span class="unread">#</span></th>
+		<th class="all"></th>
+		<th class="tag-name">Tag Name</th>
+		<th class="delete-tag">Untag</th>
       </tr>
 
 <?php
@@ -109,26 +112,18 @@ foreach($tags as $tag)
 	$count = $tag['count'];
 	$unread = $tag['unread'];
  
-   if($tag_id == 1 || $tag_id == 2) continue;
+	if($tag_id == 1 || $tag_id == 2) continue;
+	if(++$t % 2) $tr_class = " odd-row"; else $tr_class = "";
 
-   if(++$t % 2)
-   {
-      print "      <tr class=\"odd-row\">\n";
-   }
-   else
-   {
-      print "      <tr>\n";
-   }
-
-   print "        <td class=\"number\">\n";
-   if($unread) print "          <a class='unread' href='.?what=unread&tag=$tag_name'>$unread</a>\n";
-   print "        </td>\n";
-   print "        <td class=\"all\"><a href='.?what=all&tag=$tag_name'>$count</a></td>\n";
-   print "        <td class=\"tag-name\"><b><a href='.?what=all&tag=$tag_name'>$tag_name</a></b></td>\n";
-//   print "      <td><a href=\"#\" title=\"untag all items\" onclick=\"if(confirm('Untag all [$tag_name] items --are you SURE?')) { delete_tag('$tag_name'); return false; }  else { return false; }\">[x]</a></td>\n";
-   print "        <td class=\"delete-tag\"><a href=\"#\" title=\"untag all items\" onclick=\"delete_tag('$tag_name'); return false;\">[x]</a></td>\n";
-
-   print "      </tr>\n";
+	print "      <tr class=\"table-tags".$tr_class."\">\n";
+	print "        <td class=\"number\">\n";
+	if($unread) print "          <a class='unread' href='.?what=unread&tag=$tag_name'>$unread</a>\n";
+	print "        </td>\n";
+	print "        <td class=\"all\"><a href='.?what=all&tag=$tag_name'>$count</a></td>\n";
+	print "        <td class=\"tag-name\"><b><a href='.?what=all&tag=$tag_name'>$tag_name</a></b></td>\n";
+//	print "      <td><a href=\"#\" title=\"untag all items\" onclick=\"if(confirm('Untag all [$tag_name] items --are you SURE?')) { delete_tag('$tag_name'); return false; }  else { return false; }\">[x]</a></td>\n";
+	print "        <td class=\"delete-tag\"><a href=\"#\" title=\"untag all items\" onclick=\"delete_tag('$tag_name'); return false;\">[x]</a></td>\n";
+	print "      </tr>\n";
 }
 
 ?>
@@ -160,16 +155,16 @@ $name["feed_title"] = "title";
 
 foreach (array("feed_age", "max_date", "feed_unread", "feed_url", "feed_title") as $col)
 {
-    if($col == $order)
+    if($col == $feedorder)
     {
-        $url = "return change_feed_order('$col', '" . ($direction == "asc" ? "desc" : "asc") . "')";
-    }
+		if ($direction == "asc") $sort = "desc"; else $sort = "asc";
+	}
     else
     {
-        $url = "return change_feed_order('$col', 'asc')";
+		$sort = "asc";
     }
     
-    echo "          <td><nobr><a href='#' title='$title[$col]' onclick=\"$url\">";
+    echo "          <th><a href=\"#\" title=\"".$title[$col]."\" onclick=\"return change_feed_order('".$col."', '".$sort."')\">";
     
     if($col == "feed_unread")
     {
@@ -180,12 +175,12 @@ foreach (array("feed_age", "max_date", "feed_unread", "feed_url", "feed_title") 
         echo $name[$col];
     }
     
-    if($col == $order)
+    if($col == $feedorder)
     {
         echo ($direction == "asc") ? "&darr;" : "&uarr;";
     }
     
-    echo "</a></nobr></td>\n";
+    echo "</a></th>\n";
 }
 
 ?>
@@ -211,23 +206,15 @@ foreach($feeds as $row)
    $agestrabbr = $row['agestrabbr'];
    if (isset($row['lateststr'])) $lateststr = $row['lateststr']; else  $lateststr = "";
    if (isset($row['lateststrabbr'])) $lateststrabbr = $row['lateststrabbr']; else $lateststrabbr = "";
-
-
-   if(++$t % 2)
-   {
-      print "        <tr class=\"odd-row\">\n";
-   }
-   else
-   {
-      print "        <tr>\n";
-   }
+   if(++$t % 2) $class = " odd-row"; else $class = "";
 
    $u = ".?feed=$id&amp;what=unread";
    $u2 = ".?feed=$id&amp;what=all&amp;how=paged";
 
-   print "          <td><span title=\"$agestr\" id=\"${id}-agestr\">$agestrabbr</span></td>\n";
-   print "          <td><span title=\"$lateststr\" id=\"${id}-lateststr\">$lateststrabbr</span></td>\n";
-   print "          <td class=\"nowrap\" id=\"${id}-items\">\n";
+	print "        <tr class=\"table-feeds".$class."\">\n";
+	print "          <td><span title=\"$agestr\" id=\"${id}-agestr\">$agestrabbr</span></td>\n";
+	print "          <td><span title=\"$lateststr\" id=\"${id}-lateststr\">$lateststrabbr</span></td>\n";
+	print "          <td class=\"nowrap\" id=\"${id}-items\">\n";
 
    if($unread)
    {

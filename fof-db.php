@@ -149,6 +149,12 @@ function fof_db_get_subscriptions($user_id)
 	return(fof_safe_query($sql, $user_id));
 }
 
+function fof_db_get_all_subscriptions()
+{
+	$sql = "select * from `".FOF_FEED_TABLE."` where `public_feed` = '1' order by `feed_title`";
+	return(fof_db_query($sql));
+}
+
 function fof_db_get_feeds()
 {
 	return(fof_db_query("select * from `".FOF_FEED_TABLE."` order by `feed_title`"));
@@ -368,7 +374,7 @@ function fof_db_get_items($user_id=1, $feed=NULL, $what="unread", $when=NULL, $s
         $array[] = $row;
     }
     
-  //  $array = fof_multi_sort($array, 'item_published', $order != "asc");
+	$array = fof_multi_sort($array, 'item_published', $order != "asc");
     
     $i = 0;
     foreach($array as $item)
@@ -397,7 +403,20 @@ function fof_db_get_items($user_id=1, $feed=NULL, $what="unread", $when=NULL, $s
 
 function fof_db_get_item($user_id, $item_id)
 {
-    $query = "select `".FOF_FEED_TABLE."`.feed_image as feed_image, `".FOF_FEED_TABLE."`.feed_title as feed_title, `".FOF_FEED_TABLE."`.feed_link as feed_link, `".FOF_FEED_TABLE."`.feed_description as feed_description, `".FOF_ITEM_TABLE."`.item_id as item_id, `".FOF_ITEM_TABLE."`.item_link as item_link, `".FOF_ITEM_TABLE."`.item_title as item_title, `".FOF_ITEM_TABLE."`.item_cached, `".FOF_ITEM_TABLE."`.item_published, `".FOF_ITEM_TABLE."`.item_updated, `".FOF_ITEM_TABLE."`.item_content as item_content from `".FOF_FEED_TABLE."`, `".FOF_ITEM_TABLE."` where `".FOF_ITEM_TABLE."`.feed_id=`".FOF_FEED_TABLE."`.feed_id and `".FOF_ITEM_TABLE."`.item_id = %d";
+    $query = "select `".FOF_FEED_TABLE."`.feed_image as feed_image, 
+					`".FOF_FEED_TABLE."`.feed_title as feed_title, 
+					`".FOF_FEED_TABLE."`.feed_link as feed_link, 
+					`".FOF_FEED_TABLE."`.feed_description as feed_description, 
+					`".FOF_ITEM_TABLE."`.item_id as item_id, 
+					`".FOF_ITEM_TABLE."`.item_link as item_link, 
+					`".FOF_ITEM_TABLE."`.item_title as item_title, 
+					`".FOF_ITEM_TABLE."`.item_cached, 
+					`".FOF_ITEM_TABLE."`.item_published, 
+					`".FOF_ITEM_TABLE."`.item_updated, 
+					`".FOF_ITEM_TABLE."`.item_content as item_content 
+				from `".FOF_FEED_TABLE."`, `".FOF_ITEM_TABLE."` 
+				where `".FOF_ITEM_TABLE."`.feed_id = `".FOF_FEED_TABLE."`.feed_id 
+					and `".FOF_ITEM_TABLE."`.item_id = %d";
     
     $result = fof_safe_query($query, $item_id);
     
@@ -407,7 +426,13 @@ function fof_db_get_item($user_id, $item_id)
     
 	if($user_id)
 	{
-		$result = fof_safe_query("select `".FOF_TAG_TABLE."`.tag_name from `".FOF_TAG_TABLE."`, `".FOF_ITEM_TAG_TABLE."` where `".FOF_TAG_TABLE."`.tag_id = `".FOF_ITEM_TAG_TABLE."`.tag_id and `".FOF_ITEM_TAG_TABLE."`.item_id = %d and `".FOF_ITEM_TAG_TABLE."`.user_id = %d", $item_id, $user_id);
+		$sql = "select `".FOF_TAG_TABLE."`.tag_name 
+				from `".FOF_TAG_TABLE."`, `".FOF_ITEM_TAG_TABLE."` 
+				where `".FOF_TAG_TABLE."`.tag_id = `".FOF_ITEM_TAG_TABLE."`.tag_id 
+					and `".FOF_ITEM_TAG_TABLE."`.item_id = %d 
+					and `".FOF_ITEM_TAG_TABLE."`.user_id = %d";
+
+		$result = fof_safe_query($sql, $item_id, $user_id);
 
 		while($row = fof_db_get_row($result))
 		{

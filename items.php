@@ -17,12 +17,14 @@ include_once("fof-render.php");
 
 $title = fof_view_title($_GET['feed'], $what, $when, $which, $_GET['howmany'], $_GET['search']);
 $noedit = $_GET['noedit'];
+$new_to_old = 'New -> Old';
+$old_to_new = 'Old -> New';
 ?>
 <div id="items">
 
 <ul id="item-display-controls-spacer" class="inline-list">
-	<li class="orderby">new to old</li>
-	<li class="orderby">old to new</li>
+	<li class="orderby"><?php print ($new_to_old);?></li>
+	<li class="orderby"><?php print ($old_to_new);?></li>
 	<li><a href="javascript:flag_all();mark_read()">Mark all read</a></li>
 	<li><a href="javascript:flag_all()">Flag all</a></li>
 	<li><a href="javascript:unflag_all()">Unflag all</a></li>
@@ -38,8 +40,6 @@ $noedit = $_GET['noedit'];
 <p><?php 
 
 echo $title;
-$new_to_old = 'New -> Old';
-$old_to_new = 'Old -> New';
 
 if ($order == "desc")
 {
@@ -55,7 +55,8 @@ elseif ($order == "asc")
 
 
 <ul id="item-display-controls" class="inline-list">
-	<li class="orderby"><?php
+	<li class="orderby">
+<?php
 
 	$url = "";
 	if ($feed) $url .= "feed=".$feed;
@@ -64,16 +65,27 @@ elseif ($order == "asc")
 	if ($when) $url .= (strlen($url) ? "&amp;":""). "when=".$when;
 	if ($how) $url .= (strlen($url) ? "&amp;":""). "how=".$how;
 	if ($howmany) $url .= (strlen($url ? "&amp;":"")). "howmany=".$howmany;
-	echo ($order == "desc") ? "<a href=\".?$url&amp;order=asc\" title=\"Display oldest first\">$old_to_new</a>" : "<a href=\".?$url&amp;order=desc\" title=\"Display newest first\">$new_to_old</a>" ;
-	?></li>
-	<li><a href="javascript:flag_all();mark_read()">Mark all read</a></li>
-	<li><a href="javascript:flag_all()">Flag all</a></li>
-	<li><a href="javascript:unflag_all()">Unflag all</a></li>
-	<li><a href="javascript:toggle_all()">Toggle all</a></li>
-	<li><a href="javascript:mark_read()">Mark flagged read</a></li>
-	<li><a href="javascript:mark_unread()">Mark flagged unread</a></li>
-	<li><a href="javascript:show_hide_all('shown')">Show all</a></li>
-	<li><a href="javascript:show_hide_all('hidden')">Hide all</a></li>
+	if ($order == "desc") 
+	{ 
+		$title = "Display oldest first";
+		$name = $old_to_new;
+	}
+	else
+	{
+		$title = "Display newest first";
+		$name = $new_to_old;
+	}
+	print ("	  <a href=\".?$url&amp;order=$order\" $title>$name</a>\n");
+?>
+	</li>
+	<li onClick="javascript:flag_all();mark_read()"><a href="javascript:flag_all();mark_read()">Mark all read</a></li>
+	<li onClick="javascript:flag_all()"><a href="javascript:flag_all()">Flag all</a></li>
+	<li onClick="javascript:unflag_all()"><a href="javascript:unflag_all()">Unflag all</a></li>
+	<li onClick="javascript:toggle_all()"><a href="javascript:toggle_all()">Toggle all</a></li>
+	<li onClick="javascript:mark_read()"><a href="javascript:mark_read()">Mark flagged read</a></li>
+	<li onClick="javascript:mark_unread()"><a href="javascript:mark_unread()">Mark flagged unread</a></li>
+	<li onClick="javascript:show_hide_all('shown');"><a href="javascript:show_hide_all('shown')">Show all</a></li>
+	<li onClick="javascript:show_hide_all('hidden')"><a href="javascript:show_hide_all('hidden')">Hide all</a></li>
 </ul>
 
 
@@ -103,7 +115,7 @@ $first = true;
 $date_item_published_saved = 0;
 $prefs = fof_prefs();
 $offset = $prefs['tzoffset'];
-$colapse = (isset($_COOKIE["colapse"]) ? $_COOKIE["colapse"] : ((isset($prefs['colapse']) and $prefs['colapse']) ? "hidden" : "shown"));
+$collapse = (isset($_COOKIE["fof_collapse"]) ? $_COOKIE["fof_collapse"] : ((isset($prefs['fof_collapse']) and $prefs['fof_collapse']) ? "hidden" : "shown"));
 
 foreach($result as $row)
 {
@@ -129,13 +141,11 @@ if(count($result) == 0)
         
         <div id="end-of-items"></div>
 
-<script>itemElements = $$('.item');</script>
-<?php
-if ($colapse == "hidden")
-{
-	print ("<script>\n");
-	print ("javascript:show_hide_all('hidden');\n");
-	print ("</script>\n");
-}
+<script>
+itemElements = $$('.item');
 
+<?php
+if ($collapse == "hidden") print ("show_hide_all('hidden');\n");
+if (isset($_COOKIE["fof_sidebar_table-tags"]) and $_COOKIE["fof_sidebar_table-tags"] == "hide") print ("sideBar_show_hide_table('table-tags');\n");
 ?>
+</script>

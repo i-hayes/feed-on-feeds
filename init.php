@@ -96,7 +96,14 @@ if(!isset($order))
 
 if(!isset($direction))
 {
-   if (isset($_GET['direction'])) $direction = $_GET['direction']; else $direction = "asc";
+	if (isset($_GET['direction']))
+	{
+		$direction = $_GET['direction'];
+	}
+	else
+	{
+		$direction = "asc";
+	}
 }
 
 //$how = $_GET['how'];

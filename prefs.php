@@ -65,7 +65,7 @@ if(isset($_POST['prefs']))
 	$prefs->set('favicons', (isset($_POST['favicons']) ? 1: 0));
 	$prefs->set('keyboard', (isset($_POST['keyboard']) ? 1: 0));
 	$prefs->set('new_page', (isset($_POST['new_page']) ? 1: 0));
-	$prefs->set('colapse', (isset($_POST['colapse']) ? 1 : 0));
+	$prefs->set('collapse', (isset($_POST['collapse']) ? 1 : 0));
 	$prefs->set('tzoffset', intval($_POST['tzoffset']));
 	$prefs->set('tformat', $_POST['tformat']);
 	$prefs->set('dsformat', $_POST['dsformat']);
@@ -195,7 +195,7 @@ function hideMessage()
     </div>
     <div class="prefs-row">
       <div class="column-one">Condensed display by default</div>
-      <div class="column-two"><input class="input checkbox" id="new_page" type="checkbox" name="colapse" value="1"<?php if($prefs->get('colapse')) echo " checked=checked";?> /></div>
+      <div class="column-two"><input class="input checkbox" id="new_page" type="checkbox" name="collapse" value="1"<?php if($prefs->get('collapse')) echo " checked=checked";?> /></div>
     </div>
     <div class="prefs-row">
       <div class="column-one">Number of items in paged displays:</div>
@@ -278,8 +278,12 @@ print (" current: ".date($prefs->get('dlformat')));
   <form method="post" action="<?php print (FOF_BASEDIR); ?>?prefs=1">
     <div class="prefs-row table">
       <div class="prefs-row table-row">
+        <div class="column-one table-cell"></div>
+        <div class="column-two table-cell">All password fields must be filled for a password change to occur. Old password must be the same as the one you are currently logged in with. Both new passwords must match and have a minimum length of 10 characters.</div>
+      </div>
+      <div class="prefs-row table-row">
         <div class="column-one table-cell">Old password:</div>
-        <div class="column-two table-cell"><input type="password" name="old_password" /> (leave blank to not change)</div>
+        <div class="column-two table-cell"><input type="password" name="old_password" /></div>
       </div>
       <div class="prefs-row table-row">
         <div class="column-one table-cell">New password:</div>

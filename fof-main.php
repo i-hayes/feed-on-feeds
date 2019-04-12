@@ -131,7 +131,7 @@ function fof_authenticate($user_name, $user_password, $remember = 0)
 			$row = $result->fetch_assoc();
 			if ($row["Type"] == "varchar(254)")
 			{
-				$fof["user_password_hash"] = fof_db_change_password(fof_current_user(), $user_password);
+				fof_db_change_password(fof_current_user(), $user_password);
 				$prefs->set('auth_type', "crypt");
 				$prefs->save();
 			}
@@ -417,7 +417,7 @@ function fof_nice_time_stamp($age)
 function fof_get_feeds($user_id, $order = 'feed_title', $direction = 'asc')
 {
 	$feeds = array();
-	$result = fof_db_get_subscriptions($user_id);
+	$result = fof_db_get_subscriptions($user_id, $order, $direction);
 
 	while($row = fof_db_get_row($result))
 	{
@@ -492,7 +492,7 @@ function fof_get_feeds($user_id, $order = 'feed_title', $direction = 'asc')
 		}
 	}
 
- //  $feeds = fof_multi_sort($feeds, $order, $direction != "asc");
+   $feeds = fof_multi_sort($feeds, $order, $direction != "asc");
 
    return $feeds;
 }
@@ -1173,21 +1173,82 @@ function fof_get_plugin_prefs()
     return $fof_plugin_prefs;
 }
 
-function fof_multi_sort($tab,$key,$rev)
+function fof_multi_sort($tab, $key, $rev)
 {
-    if($rev)
-    {
-        $compare = function() {'if (strtolower($a["'.$key.'"]) == strtolower($b["'.$key.'"])) {return 0;}else {return ((strtolower($a["'.$key.'"]) > strtolower($b["'.$key.'"])) ? -1 : 1)};';};
-    }
-    else
-    {
-	print ($key);
-        $compare = function() {'if (strtolower($a["'.$key.'"]) == strtolower($b["'.$key.'"])) {return 0;}else {return (strtolower($a["'.$key.'"]) < strtolower($b["'.$key.'"])) ? -1 : 1;};';};
-    }
 
-    usort($tab,$compare) ;
-    return $tab ;
+	if($rev)
+	{
+//		$compare = function() {'if (strtolower($a["'.$key.'"]) == strtolower($b["'.$key.'"])) {return 0;}else {return ((strtolower($a["'.$key.'"]) > strtolower($b["'.$key.'"])) ? -1 : 1)};';};
+		uasort($tab, fof_comparer([$key, SORT_DESC, "fof_natural_sort"]));
+	}
+	else
+	{
+//		$compare = function() {'if (strtolower($a["'.$key.'"]) == strtolower($b["'.$key.'"])) {return 0;}else {return (strtolower($a["'.$key.'"]) < strtolower($b["'.$key.'"])) ? -1 : 1;};';};
+		uasort($tab, fof_comparer([$key, SORT_ASC, "fof_natural_sort"]));
+	}
+
+	return $tab;
 }
+
+/**
+ * This function modifies the sort in the function fof_compare to makes it
+ * a natural sort (Aa)-(Zz), rather than A-Z then a-z.
+ */
+function fof_natural_sort($val)
+{
+	return strtoupper($val);
+}
+/**
+ * Thanks to Jon (Rocket Internet) at "talegame" at Gmail.com via Stack Overflow 
+ * https://stackoverflow.com/questions/96759/how-do-i-sort-a-multidimensional-array-in-php/16788610#16788610
+ * for the following sort function. 
+ */
+function fof_comparer() 
+{
+	// Normalize criteria up front so that the comparer finds everything tidy
+	$criteria = func_get_args();
+	foreach ($criteria as $index => $criterion) 
+	{
+		$criteria[$index] = is_array($criterion)
+			? array_pad($criterion, 3, null)
+			: array($criterion, SORT_ASC, null);
+	}
+
+	return function($first, $second) use (&$criteria) 
+	{
+		foreach ($criteria as $criterion) 
+		{
+			// How will we compare this round?
+			list($column, $sortOrder, $projection) = $criterion;
+			$sortOrder = ($sortOrder === SORT_DESC ? -1 : 1);
+
+			// If a projection was defined project the values now
+			if ($projection) 
+			{
+				$lhs = call_user_func($projection, $first[$column]);
+				$rhs = call_user_func($projection, $second[$column]);
+			}
+			else 
+			{
+				$lhs = $first[$column];
+				$rhs = $second[$column];
+			}
+
+            // Do the actual comparison; do not return if equal
+			if ($lhs < $rhs) 
+			{
+				return -1 * $sortOrder;
+			}
+			else if ($lhs > $rhs) 
+			{
+				return 1 * $sortOrder;
+			}
+		}
+
+		return 0; // tiebreakers exhausted, so $first == $second
+	};
+}
+
 function fof_view_action()
 {
 	foreach ($_POST AS $key=>$val)

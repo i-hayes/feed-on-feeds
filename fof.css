@@ -107,6 +107,7 @@ img
 	font-family: arial;
 	margin-top: 20px;
 }
+
 .heading
 {
     background: #ccc;
@@ -119,41 +120,45 @@ img
 {
 	cursor: pointer;
 }
-#sidebar td
+
+#sidebar td, 
+#sidebar th
 {
     font-size: 10px;
     padding: 2px;
+    text-align: left;
+    font-weight: normal;
 }
 
-#sidebar table.taglist td.number
+#sidebar table.taglist td.number,
+#sidebar table.taglist th.number
 {
 	width: 15px;
 }
 
-#sidebar table.taglist td.all
+#sidebar table.taglist td.all,
+#sidebar table.taglist th.all
 {
 	width: 35px;
 }
 
 #sidebar table.taglist td.tag-name
 {
-	
-	
 }
 
-#sidebar table.taglist td.delete-tag
+#sidebar table.taglist td.delete-tag,
+#sidebar table.taglist th.delete-tag
 {
 	width:30px;
 	text-align:center;
-	
 }
 
-#sidebar table.taglist tr:hover { 
-
-	
+#sidebar table.taglist tr:hover 
+{ 
 }
 
-#sidebar table.taglist td a { 
+#sidebar table.taglist td a 
+{
    display: block; 
    text-decoration: none;
 }
@@ -169,12 +174,10 @@ img
     color: red;
 }
 
-
 .unread-item
 {
     font-weight: bold;
 }
-
 
 #items
 {

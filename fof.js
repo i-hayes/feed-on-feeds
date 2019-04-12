@@ -610,7 +610,29 @@ function show_hide_all(e)
 		{
 			items[i].className = "item " + e;
 		}
-		document.cookie = "colapse=" + e;
+		document.cookie = "fof_collapse=" + e;
+	}
+}
+
+function sideBar_show_hide_table(e)
+{
+	if (e.length)
+	{
+	    items = document.getElementsByClassName(e);
+		for (var i = 0; i < items.length; i++) 
+		{
+			if (items[i].style.display == "")
+			{
+				items[i].style.display = "none"; 
+				document.cookie = "fof_sidebar_"+ e +"=hide";
+			}
+			else
+			{
+				items[i].style.display = "";
+				document.cookie = "fof_sidebar_"+ e +"=show";
+			}
+
+		}
 	}
 }
 

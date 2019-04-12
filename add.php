@@ -13,6 +13,7 @@
  */
 
 if (!isset($_POST['rss_url'])) $_POST['rss_url'] = "";
+if (!isset($_POST['exist_feed'])) $_POST['exist_feed'] = "";
 if (!isset($_GET['rss_url'])) $_GET['rss_url'] = "";
 if (!isset($_POST['opml_url'])) $_POST['opml_url'] = "";
 if (!isset($_POST['opml_file'])) $_POST['opml_file'] = "";
@@ -27,6 +28,7 @@ $unread = $_POST['unread'];
 $feeds = array();
 
 if(strlen($url)) $feeds[] = $url;
+if(strlen($_POST['exist_feed'])) $feeds[] = $_POST['exist_feed'];
 
 if(strlen($opml))
 {
@@ -62,6 +64,12 @@ if(isset($_SERVER["HTTPS"]) and $_SERVER["HTTPS"] == "on")
   $add_feed_url = "https";
 }
 $add_feed_url .= "://" . $_SERVER["HTTP_HOST"] . $_SERVER["SCRIPT_NAME"];
+$result = fof_db_get_all_subscriptions();
+$select = "";
+while ($row = $result->fetch_assoc())
+{
+	$select .= "<option value=\"".$row["feed_url"]."\">".$row["feed_title"]."</option>\n";
+}
 ?>
 <div id="items">
 
@@ -76,17 +84,19 @@ $add_feed_url .= "://" . $_SERVER["HTTP_HOST"] . $_SERVER["SCRIPT_NAME"];
 
 <form method="post" name="addform" action="<?php print (FOF_BASEDIR); ?>?add=1" enctype="multipart/form-data">
 
-When adding feeds, mark <select name="unread"><option value=today <?php if($unread == "today") echo "selected" ?> >today's</option><option value=all <?php if($unread == "all") echo "selected" ?> >all</option><option value=no <?php if($unread == "no") echo "selected" ?> >no</option></select> items as unread<br><br>
+When adding feeds, mark <select name="unread"><option value=today <?php if($unread == "today") echo "selected" ?> >today's</option><option value=all <?php if($unread == "all") echo "selected" ?> >all</option><option value=no <?php if($unread == "no") echo "selected" ?> >no</option></select> items as unread<br/><br/>
 
-RSS or weblog URL: <input type="text" name="rss_url" size="40" value="<?php echo $url ?>"><input type="Submit" value="Add a feed"><br><br>
+RSS or weblog URL: <input type="text" name="rss_url" size="40" value="<?php echo $url ?>"><input type="Submit" value="Add a feed"><br/><br/>
 
 OPML URL: <input type="hidden" name="MAX_FILE_SIZE" value="100000">
 
-<input type="text" name="opml_url" size="40" value="<?php echo $opml ?>"><input type="Submit" value="Add feeds from OPML file on the Internet"><br><br>
+<input type="text" name="opml_url" size="40" value="<?php echo $opml ?>"><input type="Submit" value="Add feeds from OPML file on the Internet"><br/><br/>
 
 <input type="hidden" name="MAX_FILE_SIZE" value="100000">
 OPML filename: <input type="file" name="opml_file" size="40" value="<?php echo $file ?>"><input type="Submit" value="Upload an OPML file">
-
+<br/><br/>
+Subscribe do public feed already in system<br/><br/>
+<select name="exist_feed"><?php print ($select); ?></select> <input type="Submit" value="Add a feed">
 </form>
 
 <?php
