@@ -149,6 +149,10 @@ function fof_set_session($data)
 		if (strlen($v)) $_SESSION[$k] = $v; 
 	}
 //	var_dump ($prefs);
+	if (null != $prefs->get("collapse"))
+	{
+		setcookie("fof_collapse", ($prefs->get("collapse") ? "hidden" : "shown"));
+	}
 	if (null != $prefs->get("remember") and $prefs->get("remember"))
 	{
 		$salt = Salt();
