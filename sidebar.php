@@ -96,7 +96,7 @@ if($n)
 
   <div id="tags">
     <table cellspacing="0" cellpadding="1" border="0" id="taglist" class="taglist">
-      <tr class="heading" onClick="sideBar_show_hide_table('table-tags');">
+      <tr class="heading" onClick="toggle_show_sideBar_table('table-tags');">
         <th class="number"><span class="unread">#</span></th>
 		<th class="all"></th>
 		<th class="tag-name">Tag Name</th>

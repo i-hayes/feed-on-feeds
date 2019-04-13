@@ -181,7 +181,19 @@ function hideMessage()
 ?>
 
 <div class="main-heading"><h1>Feed on Feeds</h1></div>
-<div class="heading prefs" onClick="toggle_show('prefs');"><h2>Preferences</h2></div>
+<div>
+  <div class="heading prefs prefs" onClick="hide_all('container'); toggle_show('prefs');"><h2>Preferences</h2></div>
+  <div class="heading prefs passwd" onClick="hide_all('container'); toggle_show('passwd');"><h2>Password Change</h2></div>
+  <div class="heading prefs plugin" onClick="hide_all('container'); toggle_show('plugin');"><h2>Plugin Preferences</h2></div>
+  <div class="heading prefs feedstags" onClick="hide_all('container'); toggle_show('feedstags');"><h2>Feeds and Tags</h2></div>
+<?php if(fof_is_admin()) { ?>
+  <div class="heading prefs options" onClick="hide_all('container'); toggle_show('options');"><h2>Site Options</h2></div>
+  <div class="heading prefs adduser" onClick="hide_all('container'); toggle_show('adduser');"><h2>Add User</h2></div>
+  <div class="heading prefs deleteuser" onClick="hide_all('container'); toggle_show('deleteuser');"><h2>Delete User</h2></div>
+  <div class="heading prefs password" onClick="hide_all('container'); toggle_show('password');"><h2>Change User's Password</h2></div>
+  <div class="heading prefs uninstall" onClick="hide_all('container'); toggle_show('uninstall');"><h2>Uninstall</h2></div>
+<?php } ?>
+</div>
 <div class="container" id="prefs">
   <form method="post" action="<?php print (FOF_BASEDIR); ?>?prefs=1">
     <div class="prefs-row">
@@ -273,7 +285,6 @@ print (" current: ".date($prefs->get('dlformat')));
   </form>
 </div>
 
-<div class="heading prefs" onClick="toggle_show('passwd');"><h2>Password Change</h2></div>
 <div class="container" id="passwd">
   <form method="post" action="<?php print (FOF_BASEDIR); ?>?prefs=1">
     <div class="prefs-row table">
@@ -301,7 +312,6 @@ print (" current: ".date($prefs->get('dlformat')));
   </form>
 </div>
 
-<div class="heading prefs" onClick="toggle_show('plugin');"><h2>Plugin Preferences</h2></div>
 <div class="container" id="plugin">
   <form method="post" action="<?php print (FOF_BASEDIR); ?>?prefs=1">
 <?php
@@ -355,8 +365,6 @@ print (" current: ".date($prefs->get('dlformat')));
   </form>
 </div>
 
-
-<div class="heading prefs" onClick="toggle_show('feedstags');"><h2>Feeds and Tags</h2></div>
 <div class="container" id="feedstags">
   <div class="prefs-row table Feeds-and-Tags">
  
@@ -407,8 +415,7 @@ foreach($feeds as $row)
 
 <?php if(fof_is_admin()) { ?>
 
-<div class="heading prefs" onClick="toggle_show('admin');"><h2>Admin Options</h2></div>
-<div class="container" id="admin">
+<div class="container" id="options">
   <form method="post" action="<?php print (FOF_BASEDIR);?>?prefs=1">
     <div class="prefs-row">
       <div class="column-one">Enable logging? </div>
@@ -432,8 +439,6 @@ foreach($feeds as $row)
     </div>
   </form>
 </div>
-
-<div class="heading prefs" onClick="toggle_show('adduser');"><h2>Admin Options - Add User</h2></div>
 <div class="container" id="adduser">
   <form method="post" action="<?php print (FOF_BASEDIR);?>?prefs=1">
     <div class="prefs-row">
@@ -458,7 +463,6 @@ foreach($feeds as $row)
     {
 ?>
 
-<div class="heading prefs" onClick="toggle_show('deleteuser');"><h2>Admin Options - Delete User</h2></div>
 <div class="container" id="deleteuser">
   <form method="post" action="<?php print (FOF_BASEDIR);?>?prefs=1" onsubmit="return confirm('Delete User - Are you sure?')">
     <div class="prefs-row">
@@ -472,7 +476,6 @@ foreach($feeds as $row)
   </form>
 </div>
 
-<div class="heading prefs" onClick="toggle_show('password');"><h2>Admin Options - Change User's Password</h2></div>
 <div class="container" id="password">
   <form method="post" action="<?php print (FOF_BASEDIR);?>?prefs=1" onsubmit="return confirm('Change Password - Are you sure?')">
     <div class="prefs-row table">
@@ -502,7 +505,6 @@ foreach($feeds as $row)
 
 <?php } ?>
 
-<div class="heading prefs" onClick="toggle_show('uninstall');"><h2>Admin Options - Uninstall Feed on Feeds</h2></div>
 <div class="container" id="uninstall">
   <form method="get" action="uninstall.php" onsubmit="return confirm('Really?  This will delete all the database tables!')">
     <div class="prefs-row">
