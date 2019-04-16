@@ -118,6 +118,11 @@ img
 	margin-left: 0px;
 }
 
+table#taglist tr.heading
+{
+	cursor: pointer;
+}
+
 .heading.prefs
 {
     background: #ccc;
