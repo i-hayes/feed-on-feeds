@@ -1179,7 +1179,6 @@ function fof_get_plugin_prefs()
 
 function fof_multi_sort($tab, $key, $rev)
 {
-
 	if($rev)
 	{
 //		$compare = function() {'if (strtolower($a["'.$key.'"]) == strtolower($b["'.$key.'"])) {return 0;}else {return ((strtolower($a["'.$key.'"]) > strtolower($b["'.$key.'"])) ? -1 : 1)};';};
@@ -1200,7 +1199,7 @@ function fof_multi_sort($tab, $key, $rev)
  */
 function fof_natural_sort($val)
 {
-	return strtoupper($val);
+	return (is_string($val) ? strtoupper($val) : $val);
 }
 /**
  * Thanks to Jon (Rocket Internet) at "talegame" at Gmail.com via Stack Overflow 
@@ -1227,25 +1226,28 @@ function fof_comparer()
 			$sortOrder = ($sortOrder === SORT_DESC ? -1 : 1);
 
 			// If a projection was defined project the values now
-			if ($projection) 
+			if ($projection and isset($first[$column]) and isset($second[$column]))
 			{
 				$lhs = call_user_func($projection, $first[$column]);
 				$rhs = call_user_func($projection, $second[$column]);
 			}
-			else 
+			elseif (isset($first[$column]) and isset($second[$column]))
 			{
 				$lhs = $first[$column];
 				$rhs = $second[$column];
 			}
 
             // Do the actual comparison; do not return if equal
-			if ($lhs < $rhs) 
+			if (isset($lhs) and isset($rhs))
 			{
-				return -1 * $sortOrder;
-			}
-			else if ($lhs > $rhs) 
-			{
-				return 1 * $sortOrder;
+				if ($lhs < $rhs) 
+				{
+					return -1 * $sortOrder;
+				}
+				else if ($lhs > $rhs) 
+				{
+					return 1 * $sortOrder;
+				}
 			}
 		}
 
