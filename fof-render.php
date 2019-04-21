@@ -84,7 +84,6 @@ function fof_render_item($item)
 	
 	$unread = in_array("unread", $tags) ? true : false;
 ?>
-<span class="meta date-time"><?php echo $item_published ?></span>
 <div class="header">
 
 	<div class="controls">
@@ -178,6 +177,7 @@ function fof_render_item($item)
 </div>
 
 
+<span class="meta date-time"><?php echo $item_published ?></span>
 <div class="body"><?php echo $item_content ?></div>
 
 <?php

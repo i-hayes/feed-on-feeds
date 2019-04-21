@@ -122,9 +122,9 @@ foreach($result as $row)
 	$item_id = $row['item_id'];
 	if($first) print "<script>firstItem = 'i$item_id'; </script>";
 	$date_item_published = date($prefs['dlformat'], ($row['item_published'] + $offset*60*60));
+	if ($date_item_published_saved !== $date_item_published) print ("<div class=\"date-item-published\">".$date_item_published."</div>");
 
 	$first = false;
-	if ($date_item_published_saved !== $date_item_published) print ("<div class=\"date-item-published\">".$date_item_published."</div>");
 	print '<div class="item shown" id="i' . $item_id . '"  onclick="return itemClicked(event)">';
 	fof_render_item($row);
 	print '</div>';

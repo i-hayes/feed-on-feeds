@@ -378,7 +378,7 @@ body
 
 .hidden h2
 {
-    font-size: 80%;
+/*    font-size: 80%;*/
 }
 
 .hidden .tags
@@ -398,7 +398,7 @@ body
 
 .shown .dash
 {
-    display: none;
+/*    display: none;*/
 }
 
 #welcome
