@@ -46,6 +46,7 @@ if(!isset($fof_installer))
     fof_init_plugins();
     ob_end_clean();
 }
+$collapse = (isset($_COOKIE["fof_collapse"]) ? $_COOKIE["fof_collapse"] : ((isset($prefs['fof_collapse']) and $prefs['fof_collapse']) ? "hidden" : "shown"));
 
 require_once('simplepie/simplepie.inc');
 

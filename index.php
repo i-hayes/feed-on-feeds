@@ -23,6 +23,12 @@ include("init.php");
 if (isset($_GET["logout"])) fof_logout();
 if (isset($_GET["view-action"])) fof_view_action();
 
+if (strpos(strtolower($_SERVER['HTTP_USER_AGENT']), "tablet") or strpos(strtolower($_SERVER['HTTP_USER_AGENT']), "mobile"))
+{
+	include("mobile.php");
+	exit;
+}
+
 include("header.php");
 ?>
 <div id="sidebar">
