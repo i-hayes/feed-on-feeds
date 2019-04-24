@@ -131,9 +131,9 @@ foreach($result as $item)
 	$item_content = $item['item_content'];
 //	$item_read = $item['item_read'];
 
-	$item_published = gmdate("Y-n-d g:ia", $item['item_published'] + $fof_prefs_obj->get('$offset')*60*60);
-	$item_cached = gmdate("Y-n-d g:ia", $item['item_cached'] + $fof_prefs_obj->get('$offset')*60*60);
-	$item_updated = gmdate("Y-n-d g:ia", $item['item_updated'] + $fof_prefs_obj->get('$offset')*60*60);
+	$item_published = gmdate("Y-n-d g:ia", $item['item_published'] + $fof_prefs_obj->get('tzoffset')*60*60);
+	$item_cached = gmdate("Y-n-d g:ia", $item['item_cached'] + $fof_prefs_obj->get('tzoffset')*60*60);
+	$item_updated = gmdate("Y-n-d g:ia", $item['item_updated'] + $fof_prefs_obj->get('tzoffset')*60*60);
 
 	if(!$item_title) $item_title = "[no title]";
 	$tags = $item['tags'];
