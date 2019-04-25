@@ -152,8 +152,9 @@ $name["max_date"] = "latest";
 $name["feed_unread"] = "#";
 $name["feed_url"] = "feed";
 $name["feed_title"] = "title";
+$cols = array("feed_age", "feed_unread", "feed_url", "feed_title"); //, "max_date"
 
-foreach (array("feed_age", "max_date", "feed_unread", "feed_url", "feed_title") as $col)
+foreach ($cols as $col)
 {
     if($col == $feedorder)
     {
@@ -212,7 +213,7 @@ foreach($feeds as $row)
    $u2 = ".?feed=$id&amp;what=all&amp;how=paged";
 
 	print "        <tr class=\"table-feeds".$class."\">\n";
-	print "          <td><span title=\"$agestr\" id=\"${id}-agestr\">$agestrabbr</span></td>\n";
+//	print "          <td><span title=\"$agestr\" id=\"${id}-agestr\">$agestrabbr</span></td>\n";
 	print "          <td><span title=\"$lateststr\" id=\"${id}-lateststr\">$lateststrabbr</span></td>\n";
 	print "          <td class=\"nowrap\" id=\"${id}-items\">\n";
 

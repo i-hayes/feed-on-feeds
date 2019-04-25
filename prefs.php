@@ -36,28 +36,33 @@ if(fof_is_admin() && isset($_POST['adminprefs']))
 
 if(isset($_POST['tagfeed']))
 {
-    $tags = $_POST['tag'];
-    $feed_id = $_POST['feed_id'];
-    $title = $_POST['title'];
-    
-    foreach(explode(" ", $tags) as $tag)
-    {
-        fof_tag_feed(fof_current_user(), $feed_id, $tag);
-        $message .= " Tagged '$title' as $tag.";
-    }
+	$tags = $_POST['tag'];
+	$feed_id = $_POST['feed_id'];
+	$title = $_POST['title'];
+
+	foreach(explode(" ", $tags) as $tag)
+	{
+		fof_tag_feed(fof_current_user(), $feed_id, $tag);
+		$message .= "<div> Tagged '$title' as $tag. </div>";
+		$feeds[$feed_id]["tags"][] = $tag;
+	}
 }
 
 if(isset($_GET['untagfeed']))
 {
-    $feed_id = $_GET['untagfeed'];
-    $tags = $_GET['tag'];
-    $title = $_GET['title'];
-	
-    foreach(explode(" ", $tags) as $tag)
-    {
-        fof_untag_feed(fof_current_user(), $feed_id, $tag);
-        $message .= " Dropped $tag from '$title'.";
-    }
+	$feed_id = $_GET['untagfeed'];
+	$tags = $_GET['tag'];
+	$title = $_GET['title'];
+
+	foreach(explode(" ", $tags) as $tag)
+	{
+		fof_untag_feed(fof_current_user(), $feed_id, $tag);
+		$message .= " Dropped $tag from '$title'.";
+		foreach($feeds[$feed_id]["tags"] as $k=>$v)
+		{
+			if ($v == $tag) unset($feeds[$feed_id]["tags"][$k]);
+		}
+	}
 }
 
 if(isset($_POST['prefs']))
@@ -366,13 +371,13 @@ print (" current: ".date($prefs->get('dlformat')));
 </div>
 
 <div class="container" id="feedstags">
-  <div class="prefs-row table Feeds-and-Tags">
+  <div class="table Feeds-and-Tags">
  
 <?php
 foreach($feeds as $row)
 {
 	$tags = $row['tags'];
-    print ("    <div class=\"prefs-row table-row".(++$t % 2 ? " odd-row" : "")."\">\n");
+    print ("    <div id=\"".$row['feed_id']."\" class=\"prefs-row table-row".(++$t % 2 ? " odd-row" : "")."\">\n");
 
     if($row['feed_image'] && $prefs->get('favicons'))
 	{

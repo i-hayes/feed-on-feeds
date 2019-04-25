@@ -11,6 +11,7 @@ if (isset($_POST["Upgrade"]) and $_POST["Upgrade"] == "Upgrade")
 	$password = fof_db_password_field(1);
 	$email = fof_db_email_field(1);
 	$login = fof_db_auto_login_field(1);
+	$public = fof_db_public_feed_field(1);
 	$button = "Done";
 }
 else
@@ -18,10 +19,11 @@ else
 	$password = fof_db_password_field(0);
 	$email = fof_db_email_field(0);
 	$login = fof_db_auto_login_field(0);
+	$public = fof_db_public_feed_field(0);
 	$button = "Upgrade";
 }
 
-if ($password or $email or $login)
+if ($password or $email or $login or $public)
 {
 ?>
   <form action="upgrade.php" method="post">
@@ -122,6 +124,28 @@ function fof_db_auto_login_field($upgrade = 0)
 		else
 		{
 				print ("<div class=\"upgrade\">User table needs to be upgraded adding field `auto_login`</div>\n");
+		}
+		$return = true;
+	}
+	return $return;
+}
+
+
+function fof_db_public_feed_field($upgrade = 0)
+{
+	$result = fof_db_query("show columns from `".FOF_FEED_TABLE."` like 'public_feed'");
+	$return = false;
+	if($result->num_rows == 0)
+	{
+		if ($upgrade)
+		{
+			print "Upgrading schema adding field `public_feed`... ";
+			fof_db_query("ALTER TABLE `".FOF_FEED_TABLE."` ADD `public_feed` TINYINT NOT NULL DEFAULT '0' AFTER `feed_link`");
+			print "Done.<br/>\n";
+		}
+		else
+		{
+				print ("<div class=\"upgrade\">Feed table needs to be upgraded adding field `public_feed`</div>\n");
 		}
 		$return = true;
 	}
