@@ -212,6 +212,7 @@ foreach($feeds as $row)
    $u = ".?feed=$id&amp;what=unread";
    $u2 = ".?feed=$id&amp;what=all&amp;how=paged";
 
+
 	print "        <tr class=\"table-feeds".$class."\">\n";
 //	print "          <td><span title=\"$agestr\" id=\"${id}-agestr\">$agestrabbr</span></td>\n";
 	print "          <td><span title=\"$lateststr\" id=\"${id}-lateststr\">$lateststrabbr</span></td>\n";
