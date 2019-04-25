@@ -50,16 +50,16 @@ function fof_render_item($item)
 
 	$feed_link = $item['feed_link'];
 	$feed_title = $item['feed_title'];
-	$feed_title = str_replace("<a ", "<a target=\"_blank\"", $item['feed_title']);
+	$feed_title = str_replace("<a ", "<a target=\"_blank\" ", $item['feed_title']);
 	$feed_image = $item['feed_image'];
 	$feed_description = $item['feed_description'];
 
 	$item_link = $item['item_link'];
 	$item_id = $item['item_id'];
 	$item_title = $item['item_title'];
-	$item_title = str_replace("<a ", "<a target=\"_blank\"", $item['item_title']);
+	$item_title = str_replace("<a ", "<a target=\"_blank\" ", $item['item_title']);
 	$item_content = $item['item_content'];
-	$item_content = str_replace("<a ", "<a target=\"_blank\"", $item['item_content']);
+	$item_content = str_replace("<a ", "<a target=\"_blank\" ", $item['item_content']);
 	$item_read = (isset($item['item_read']) ? $item['item_read'] : 0);
 
 	$prefs = fof_prefs();

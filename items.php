@@ -17,84 +17,64 @@ include_once("fof-render.php");
 
 $title = fof_view_title($_GET['feed'], $what, $when, $which, $_GET['howmany'], $_GET['search']);
 $noedit = $_GET['noedit'];
-$new_to_old = 'New -> Old';
-$old_to_new = 'Old -> New';
+if ($order == "desc") 
+{ 
+	$link_vars = array("title"=>"Display oldest first", "sort"=>"asc", "name"=>'Old -> New');
+ 	$title .= " - Newest displayed first";
+}
+else
+{
+	$link_vars = array("title"=>"Display newest first", "sort"=>"desc", "name"=>'New -> Old');
+	if ($order == "asc") $title .= " - Oldest displayed first";
+}
 ?>
-<div id="items">
+      <div id="items">
 
-<ul id="item-display-controls-spacer" class="inline-list">
-	<li class="orderby"><?php print ($new_to_old);?></li>
-	<li class="orderby"><?php print ($old_to_new);?></li>
-	<li><a href="javascript:flag_all();mark_read()">Mark all read</a></li>
-	<li><a href="javascript:flag_all()">Flag all</a></li>
-	<li><a href="javascript:unflag_all()">Unflag all</a></li>
-	<li><a href="javascript:toggle_all()">Toggle all</a></li>
-	<li><a href="javascript:mark_read()">Mark flagged read</a></li>
-	<li><a href="javascript:mark_unread()">Mark flagged unread</a></li>
-	<li><a href="javascript:show_hide_all('shown')">Show all</a></li>
-	<li><a href="javascript:show_hide_all('hidden')">Hide all</a></li>
-</ul>
+        <ul id="item-display-controls-spacer" class="inline-list">
+          <li class="orderby"><?php print ($link_vars["name"]);?></li>
+          <li><a href="javascript:flag_all();mark_read()">Mark all read</a></li>
+          <li><a href="javascript:flag_all()">Flag all</a></li>
+          <li><a href="javascript:unflag_all()">Unflag all</a></li>
+          <li><a href="javascript:toggle_all()">Toggle all</a></li>
+          <li><a href="javascript:mark_read()">Mark flagged read</a></li>
+          <li><a href="javascript:mark_unread()">Mark flagged unread</a></li>
+          <li><a href="javascript:show_hide_all('shown')">Show all</a></li>
+          <li><a href="javascript:show_hide_all('hidden')">Hide all</a></li>
+        </ul>
 
-<br style="clear: both"><br>
+        <br style="clear: both"><br>
+        <p><?php echo $title; ?></p>
 
-<p><?php 
-
-echo $title;
-
-if ($order == "desc")
-{
-	print (" - Newest displayed first");
-}
-elseif ($order == "asc")
-{
-	print (" - Oldest displayed first");
-}
-
-?></p>
-
-
-
-<ul id="item-display-controls" class="inline-list">
-	<li class="orderby">
+        <ul id="item-display-controls" class="inline-list">
+          <li class="orderby">
 <?php
-
-	$url = "";
-	if ($feed) $url .= "feed=".$feed;
-	if ($what) $url .= (strlen($url) ? "&amp;" : "") . "what=" . (strpos($what, " ") ? substr($what, 0, strpos($what, " ")) : $what);
-	if (isset($urltag) and strlen($urltag)) $url .= (strlen($url) ? "&amp;":""). "tag=".$urltag;
-	if ($when) $url .= (strlen($url) ? "&amp;":""). "when=".$when;
-	if ($how) $url .= (strlen($url) ? "&amp;":""). "how=".$how;
-	if ($howmany) $url .= (strlen($url ? "&amp;":"")). "howmany=".$howmany;
-	if ($order == "desc") 
-	{ 
-		$title = "Display oldest first";
-		$name = $old_to_new;
-	}
-	else
-	{
-		$title = "Display newest first";
-		$name = $new_to_old;
-	}
-	print ("	  <a href=\".?$url&amp;order=$order\" $title>$name</a>\n");
+$url = "";
+if ($feed) $url .= "feed=".$feed;
+if ($what) $url .= (strlen($url) ? "&amp;" : "") . "what=" . (strpos($what, " ") ? substr($what, 0, strpos($what, " ")) : $what);
+if (isset($urltag) and strlen($urltag)) $url .= (strlen($url) ? "&amp;":""). "tag=".$urltag;
+if ($when) $url .= (strlen($url) ? "&amp;":""). "when=".$when;
+if ($how) $url .= (strlen($url) ? "&amp;":""). "how=".$how;
+if ($howmany) $url .= (strlen($url ? "&amp;":"")). "howmany=".$howmany;
+print ("          <a href=\".?$url&amp;order=".$link_vars["sort"]."\" title=\"".$link_vars["title"]."\">".$link_vars["name"]."</a>\n");
 ?>
-	</li>
-	<li onClick="javascript:flag_all();mark_read()"><a href="javascript:flag_all();mark_read()">Mark all read</a></li>
-	<li onClick="javascript:flag_all()"><a href="javascript:flag_all()">Flag all</a></li>
-	<li onClick="javascript:unflag_all()"><a href="javascript:unflag_all()">Unflag all</a></li>
-	<li onClick="javascript:toggle_all()"><a href="javascript:toggle_all()">Toggle all</a></li>
-	<li onClick="javascript:mark_read()"><a href="javascript:mark_read()">Mark flagged read</a></li>
-	<li onClick="javascript:mark_unread()"><a href="javascript:mark_unread()">Mark flagged unread</a></li>
-	<li onClick="javascript:show_hide_all('shown');"><a href="javascript:show_hide_all('shown')">Show all</a></li>
-	<li onClick="javascript:show_hide_all('hidden')"><a href="javascript:show_hide_all('hidden')">Hide all</a></li>
-</ul>
+        </li>
+        <li onClick="javascript:flag_all();mark_read()"><a href="javascript:flag_all();mark_read()">Mark all read</a></li>
+        <li onClick="javascript:flag_all()"><a href="javascript:flag_all()">Flag all</a></li>
+        <li onClick="javascript:unflag_all()"><a href="javascript:unflag_all()">Unflag all</a></li>
+          <li onClick="javascript:toggle_all()"><a href="javascript:toggle_all()">Toggle all</a></li>
+          <li onClick="javascript:mark_read()"><a href="javascript:mark_read()">Mark flagged read</a></li>
+          <li onClick="javascript:mark_unread()"><a href="javascript:mark_unread()">Mark flagged unread</a></li>
+          <li onClick="javascript:show_hide_all('shown');"><a href="javascript:show_hide_all('shown')">Show all</a></li>
+          <li onClick="javascript:show_hide_all('hidden')"><a href="javascript:show_hide_all('hidden')">Hide all</a></li>
+        </ul>
 
 
 
 <!-- close this form to fix first item! -->
 
-		<form id="itemform" name="items" action="?view-action=1" method="post" onSubmit="return false;">
-		<input type="hidden" name="action" />
-		<input type="hidden" name="return" />
+        <form id="itemform" name="items" action="?view-action=1" method="post" onSubmit="return false;">
+          <input type="hidden" name="action" />
+          <input type="hidden" name="return" />
 
 <?php
 $links = fof_get_nav_links($_GET['feed'], $what, $when, $which, $how, $_GET['howmany']);
@@ -103,7 +83,7 @@ $links = fof_get_nav_links($_GET['feed'], $what, $when, $which, $how, $_GET['how
 if($links)
 {
 ?>
-		<div class="nav-links"><?php echo $links ?></div>
+          <div class="nav-links"><?php echo $links ?></div>
 
 <?php
 
@@ -133,12 +113,11 @@ foreach($result as $row)
 
 if(count($result) == 0)
 {
-	echo "<p><i>No items found.</i></p>";
+	echo "          <p><i>No items found.</i></p>";
 }
 
 ?>
-		</form>
-        
+        </form>
         <div id="end-of-items"></div>
 
 <script>
@@ -149,3 +128,4 @@ if ($collapse == "hidden") print ("show_hide_all('hidden');\n");
 if (isset($_COOKIE["fof_sidebar_table-tags"]) and $_COOKIE["fof_sidebar_table-tags"] == "hide") print ("sideBar_show_hide_table('table-tags');\n");
 ?>
 </script>
+      </div>
