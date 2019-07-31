@@ -50,16 +50,13 @@ function fof_render_item($item)
 
 	$feed_link = $item['feed_link'];
 	$feed_title = $item['feed_title'];
-	$feed_title = str_replace("<a ", "<a target=\"_blank\" ", $item['feed_title']);
 	$feed_image = $item['feed_image'];
 	$feed_description = $item['feed_description'];
 
 	$item_link = $item['item_link'];
 	$item_id = $item['item_id'];
 	$item_title = $item['item_title'];
-	$item_title = str_replace("<a ", "<a target=\"_blank\" ", $item['item_title']);
 	$item_content = $item['item_content'];
-	$item_content = str_replace("<a ", "<a target=\"_blank\" ", $item['item_content']);
 	$item_read = (isset($item['item_read']) ? $item['item_read'] : 0);
 
 	$prefs = fof_prefs();
@@ -83,6 +80,7 @@ function fof_render_item($item)
 	$star_image = $star ? "image/star-on.gif" : "image/star-off.gif";
 	
 	$unread = in_array("unread", $tags) ? true : false;
+
 ?>
 <div class="header">
 
@@ -167,9 +165,9 @@ function fof_render_item($item)
     <h2>
 
     <?php $prefs = fof_prefs(); if($feed_image && $prefs['favicons']) { ?>
-    <a href="<?php echo $feed_link ?>" title='<?php echo $feed_description ?>' target="_BLANK"><img src="<?php echo $feed_image ?>" height="16" width="16" border="0" /></a>
+    <a href="<?php echo $feed_link ?>" title="<?php echo addslashes($feed_description) ?>" target="_BLANK"><img src="<?php echo $feed_image ?>" height="16" width="16" border="0" /></a>
     <?php } ?>
-    <a href="<?php echo $feed_link ?>" title='<?php echo $feed_description ?>' target="_BLANK"><?php echo $feed_title ?></a>
+    <a href="<?php echo $feed_link ?>" title="<?php echo addslashes($feed_description) ?>" target="_BLANK"><?php echo $feed_title ?></a>
     </h2>
 
 	<!--span class="meta">on <?php echo $item_published ?></span-->
