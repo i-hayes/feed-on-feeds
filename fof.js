@@ -744,6 +744,12 @@ function toggle_highlight()
     }
 }
 
+function flagThis(i)
+{
+	var item = document.getElementById(i); 
+	item.checked = true;
+}
+
 function flag_all()
 {
     elements = $A(Form.getInputs('itemform', 'checkbox'));  
