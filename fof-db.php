@@ -705,7 +705,7 @@ function fof_db_get_users($username = NULL)
 		$users[$row['user_id']]['user_name'] = $row['user_name'];
 		$users[$row['user_id']]['user_password_hash'] = $row['user_password_hash'];
 		$users[$row['user_id']]['user_level'] = $row['user_level'];
-//		$users[$row['user_id']]['session_id'] = $row['session_id'];
+		$users[$row['user_id']]["login_no"] = $row['login_no'];
 //		$users[$row['user_id']]['cookie'] = $row['cookie'];
 	}
 	return (isset($users) ? $users : array());

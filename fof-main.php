@@ -101,42 +101,50 @@ function fof_authenticate($user_name, $user_password, $remember = 0)
 			$user[$k] = $v;
 		} 
 	}
-	$prefs = new FoF_Prefs($user["user_id"]);
-//	if (!null == $prefs->get("remember")) $auto_login = $prefs->get("remember"); else $auto_login = 0;
-	if (null == $prefs->get("auth_type") or $prefs->get("auth_type") == "md5")
+	if ($user["login_no"] <= MAX_FAILED_LOGIN)
 	{
-		if ($user["user_password_hash"] == md5($user_password.$user_name))
+		$prefs = new FoF_Prefs($user["user_id"]);
+		if (null == $prefs->get("auth_type") or $prefs->get("auth_type") == "md5")
 		{
-			$prefs->set("auth_type", "md5");
-			$prefs->set("remember", $remember);
-			$prefs->save();
-			fof_set_session($user);
-			$login = true;
-		}
-	}
-	elseif (null != $prefs->get("auth_type") and $prefs->get("auth_type") == "crypt")
-	{
-		if (password_verify($user_password, $user["user_password_hash"]))
-		{
-			$prefs->set("remember", $remember);
-			$prefs->save();
-			fof_set_session($user);
-			$login = true;
-		}
-	}
-	if($login)
-	{
-		if ($prefs->get("auth_type") == "md5")
-		{
-			$result = fof_db_query("SHOW FIELDS FROM `".FOF_USER_TABLE."` LIKE 'user_password_hash'");
-			$row = $result->fetch_assoc();
-			if ($row["Type"] == "varchar(254)")
+			if ($user["user_password_hash"] == md5($user_password.$user_name))
 			{
-				fof_db_change_password(fof_current_user(), $user_password);
-				$prefs->set('auth_type', "crypt");
+				$prefs->set("auth_type", "md5");
+				$prefs->set("remember", $remember);
 				$prefs->save();
+				fof_set_session($user);
+				$login = true;
 			}
 		}
+		elseif (null != $prefs->get("auth_type") and $prefs->get("auth_type") == "crypt")
+		{
+			if (password_verify($user_password, $user["user_password_hash"]))
+			{
+				$prefs->set("remember", $remember);
+				$prefs->save();
+				fof_set_session($user);
+				$login = true;
+			}
+		}
+		if($login)
+		{
+			if ($prefs->get("auth_type") == "md5")
+			{
+				$result = fof_db_query("SHOW FIELDS FROM `".FOF_USER_TABLE."` LIKE 'user_password_hash'");
+				$row = $result->fetch_assoc();
+				if ($row["Type"] == "varchar(254)")
+				{
+					fof_db_change_password(fof_current_user(), $user_password);
+					$prefs->set('auth_type', "crypt");
+					$prefs->save();
+				}
+			}
+		}
+	}
+	if (!$login)
+	{
+		$user["login_no"]++;
+		fof_db_query("UPDATE `".FOF_USER_TABLE."` SET `login_no` = \"".$user["login_no"]."\" WHERE `user_id` = \"".$user["user_id"]."\"");
+		if ($user["login_no"] > MAX_FAILED_LOGIN) define("ACCOUNT_LOCKED", true);
 	}
 	return $login;
 }
@@ -149,18 +157,19 @@ function fof_set_session($data)
 	{
 		if (strlen($v)) $_SESSION[$k] = $v; 
 	}
-//	var_dump ($prefs);
+
 	if (null != $prefs->get("collapse"))
 	{
 		setcookie("fof_collapse", ($prefs->get("collapse") ? "hidden" : "shown"));
 	}
+	$autologin = "";
 	if (null != $prefs->get("remember") and $prefs->get("remember"))
 	{
 		$salt = Salt();
 		setcookie("fof_remember", $salt, (time() + COOKIE_LIFE_TIME));
-		fof_db_query("UPDATE `".FOF_USER_TABLE."` SET `auto_login` = \"".addslashes($salt)."\" WHERE `user_id` = \"".$data["user_id"]."\"");
+		$autologin = "`auto_login` = \"".addslashes($salt)."\", ";
 	}
-//	exit;
+	fof_db_query("UPDATE `".FOF_USER_TABLE."` SET $autologin`login_no` = '0' WHERE `user_id` = \"".$data["user_id"]."\"");
 
 } // end function set_session()
 
@@ -1107,7 +1116,7 @@ function fof_init_plugins()
     while($file=readdir($dirlist))
     {
     	fof_log("considering " . $file);
-        if(preg_match('\.php$',$file) && !$p->get('plugin_' . substr($file, 0, -4)))
+        if(preg_match('/\.php$/',$file) && !$p->get('plugin_' . substr($file, 0, -4)))
         {
         	fof_log("including " . $file);
 

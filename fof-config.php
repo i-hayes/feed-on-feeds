@@ -55,5 +55,6 @@ if (!defined('FOF_BASEDIR'))
 $reload_interval = 10;
 //define("COOKIE_LIFE_TIME", 60*60*24*365*10); // Set to 10 years
 define("COOKIE_LIFE_TIME", 60*60*24*10); // Set to 10 days
+define("MAX_FAILED_LOGIN", 3);
 
 ?>

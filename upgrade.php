@@ -1,29 +1,78 @@
 <?php
+error_reporting(E_ALL);
+ini_set("display_errors", 1);
+
 $fof_no_login = true;
 $fof_installer = true;
 
 include_once("fof-main.php");
 
+$Upgrade = false;
+$db_upgrade["public_feed"]["db"] = FOF_FEED_TABLE;
+$db_upgrade["public_feed"]["upgrade"]["type"] = "add";
+$db_upgrade["public_feed"]["field"]["name"] = "public_feed";
+$db_upgrade["public_feed"]["field"]["type"] = "TINYINT";
+$db_upgrade["public_feed"]["field"]["default"] = "DEFAULT '0'";
+$db_upgrade["public_feed"]["field"]["after"] = "feed_link";
+
+$db_upgrade["auto_login"]["db"] = FOF_USER_TABLE;
+$db_upgrade["auto_login"]["upgrade"]["type"] = "add";
+$db_upgrade["auto_login"]["field"]["name"] = "auto_login";
+$db_upgrade["auto_login"]["field"]["type"] = "VARCHAR( 254 )";
+$db_upgrade["auto_login"]["field"]["default"] = "DEFAULT ''";
+$db_upgrade["auto_login"]["field"]["after"] = "user_password_hash";
+
+$db_upgrade["login_attempt"]["db"] = FOF_USER_TABLE;
+$db_upgrade["login_attempt"]["upgrade"]["type"] = "add";
+$db_upgrade["login_attempt"]["field"]["name"] = "login_no";
+$db_upgrade["login_attempt"]["field"]["type"] = "TINYINT";
+$db_upgrade["login_attempt"]["field"]["default"] = "DEFAULT '0'";
+$db_upgrade["login_attempt"]["field"]["after"] = "auto_login";
+
+$db_upgrade["password_reset"]["db"] = FOF_USER_TABLE;
+$db_upgrade["password_reset"]["upgrade"]["type"] = "add";
+$db_upgrade["password_reset"]["field"]["name"] = "password_reset";
+$db_upgrade["password_reset"]["field"]["type"] = "VARCHAR( 254 )";
+$db_upgrade["password_reset"]["field"]["default"] = "DEFAULT ''";
+$db_upgrade["password_reset"]["field"]["after"] = "login_no";
+
+$db_upgrade["reset_time_out"]["db"] = FOF_USER_TABLE;
+$db_upgrade["reset_time_out"]["upgrade"]["type"] = "add";
+$db_upgrade["reset_time_out"]["field"]["name"] = "reset_time_out";
+$db_upgrade["reset_time_out"]["field"]["type"] = "INT";
+$db_upgrade["reset_time_out"]["field"]["default"] = "DEFAULT '0'";
+$db_upgrade["reset_time_out"]["field"]["after"] = "password_reset";
+
+$db_upgrade["email"]["db"] = FOF_USER_TABLE;
+$db_upgrade["email"]["upgrade"]["type"] = "delete";
+$db_upgrade["email"]["field"]["name"] = "user_email";
+
 fof_set_content_type();
 
 if (isset($_POST["Upgrade"]) and $_POST["Upgrade"] == "Upgrade")
 {
-	$password = fof_db_password_field(1);
-	$email = fof_db_email_field(1);
-	$login = fof_db_auto_login_field(1);
-	$public = fof_db_public_feed_field(1);
+	$Upgrade = fof_db_password_field(1);
+	foreach ($db_upgrade as $v)
+	{
+		$f = "fof_db_".$v["upgrade"]["type"]."_field";
+		$r = $f($v, 1);
+		if ($r) $Upgrade = true;
+	}
 	$button = "Done";
 }
 else
 {
-	$password = fof_db_password_field(0);
-	$email = fof_db_email_field(0);
-	$login = fof_db_auto_login_field(0);
-	$public = fof_db_public_feed_field(0);
+	$Upgrade = fof_db_password_field(0);
+	foreach ($db_upgrade as $v)
+	{
+		$f = "fof_db_".$v["upgrade"]["type"]."_field";
+		$r = $f($v, 0);
+		if ($r) $Upgrade = true;
+	}
 	$button = "Upgrade";
 }
 
-if ($password or $email or $login or $public)
+if ($Upgrade)
 {
 ?>
   <form action="upgrade.php" method="post">
@@ -88,64 +137,43 @@ function fof_db_password_field($upgrade = 0)
 	return $return;
 }
 
-function fof_db_email_field($upgrade = 0)
+function fof_db_delete_field($params, $upgrade = 0)
 {
-	$result = fof_db_query("show columns from `".FOF_USER_TABLE."` like 'user_email'");
+	$result = fof_db_query("show columns from `".$params["db"]."` like '".$params["field"]["name"]."'");
 	$return = false;
-	if($result->num_rows == 0)
+
+	if($result->num_rows > 0)
 	{
 		if ($upgrade)
 		{
-			print "Upgrading schema adding field `user_email`... ";
-			fof_db_query("ALTER TABLE `".FOF_USER_TABLE."` ADD `user_email` VARCHAR( 254 ) NOT NULL AFTER `user_password_hash`");
+			print "Upgrading schema deleting field `".$params["field"]["name"]."`... ";
+			fof_db_query("ALTER TABLE `".FOF_USER_TABLE."` DROP `".$params["field"]["name"]."`");
 			print "Done.<br/>\n";
 		}
 		else
 		{
-				print ("<div class=\"upgrade\">User table needs to be upgraded adding field `user_email`</div>\n");
+				print ("<div class=\"upgrade\">'".$params["db"]."' table needs to be upgraded removing field `".$params["field"]["name"]."`</div>\n");
 		}
 		$return = true;
 	}
 	return $return;
 }
 
-function fof_db_auto_login_field($upgrade = 0)
+function fof_db_add_field($params, $upgrade = 0)
 {
-	$result = fof_db_query("show columns from `".FOF_USER_TABLE."` like 'auto_login'");
+	$result = fof_db_query("show columns from `".$params["db"]."` like '".$params["field"]["name"]."'");
 	$return = false;
 	if($result->num_rows == 0)
 	{
 		if ($upgrade)
 		{
-			print "Upgrading schema adding field `auto_login`... ";
-			fof_db_query("ALTER TABLE `".FOF_USER_TABLE."` ADD `auto_login` VARCHAR( 254 ) NOT NULL AFTER `user_password_hash`");
+			print "Upgrading schema adding field `".$params["field"]["name"]."`... ";
+			fof_db_query("ALTER TABLE `".$params["db"]."` ADD `".$params["field"]["name"]."` ".$params["field"]["type"]." NOT NULL ".$params["field"]["default"]." AFTER `".$params["field"]["after"]."`");
 			print "Done.<br/>\n";
 		}
 		else
 		{
-				print ("<div class=\"upgrade\">User table needs to be upgraded adding field `auto_login`</div>\n");
-		}
-		$return = true;
-	}
-	return $return;
-}
-
-
-function fof_db_public_feed_field($upgrade = 0)
-{
-	$result = fof_db_query("show columns from `".FOF_FEED_TABLE."` like 'public_feed'");
-	$return = false;
-	if($result->num_rows == 0)
-	{
-		if ($upgrade)
-		{
-			print "Upgrading schema adding field `public_feed`... ";
-			fof_db_query("ALTER TABLE `".FOF_FEED_TABLE."` ADD `public_feed` TINYINT NOT NULL DEFAULT '0' AFTER `feed_link`");
-			print "Done.<br/>\n";
-		}
-		else
-		{
-				print ("<div class=\"upgrade\">Feed table needs to be upgraded adding field `public_feed`</div>\n");
+				print ("<div class=\"upgrade\">'".$params["db"]."' table needs to be upgraded adding field `".$params["field"]["name"]."`</div>\n");
 		}
 		$return = true;
 	}
