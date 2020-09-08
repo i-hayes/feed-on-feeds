@@ -113,7 +113,7 @@ function fof_db_feed_update_metadata($feed_id, $url, $title, $link, $description
 {
 
     $sql = "update `".FOF_FEED_TABLE."` set `feed_url` = '%s', `feed_title` = '%s', `feed_link` = '%s', `feed_description` = '%s'";
-    $args = array($url, $title, $link, $description);
+    $args = array($url, strip_tags($title), $link, $description);
 
 	if($image)
 	{
@@ -229,7 +229,7 @@ function fof_db_get_feed_by_id($feed_id)
 
 function fof_db_add_feed($url, $title, $link, $description)
 {
-	$result = fof_safe_query("insert into `".FOF_FEED_TABLE."` (feed_url,feed_title,feed_link,feed_description) values ('%s', '%s', '%s', '%s')", $url, $title, $link, $description);
+	$result = fof_safe_query("insert into `".FOF_FEED_TABLE."` (feed_url,feed_title,feed_link,feed_description) values ('%s', '%s', '%s', '%s')", $url, strip_tags($title), $link, $description);
 
 	return $result;
 }
@@ -454,7 +454,7 @@ function fof_db_get_subscription_to_tags()
 	while($row = fof_db_get_row($result))
 	{
 		$prefs = unserialize($row['subscription_prefs']);
-		$tags = $prefs['tags'];
+		if (!is_bool($prefs)) $tags = $prefs['tags']; else $tags = "";
 		if(!isset($r[$row['feed_id']]) or !is_array($r[$row['feed_id']])) $r[$row['feed_id']] = array();
 		$r[$row['feed_id']][$row['user_id']] = $tags;
 	}

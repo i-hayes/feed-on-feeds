@@ -48,7 +48,8 @@ if(!isset($fof_installer))
 }
 $collapse = (isset($_COOKIE["fof_collapse"]) ? $_COOKIE["fof_collapse"] : ((isset($prefs['fof_collapse']) and $prefs['fof_collapse']) ? "hidden" : "shown"));
 
-require_once('simplepie/simplepie.inc');
+//require_once('simplepie/simplepie.inc');
+require_once('simplepie/autoloader.php');
 
 function fof_set_content_type()
 {
@@ -717,7 +718,7 @@ function fof_subscribe($user_id, $url, $unread="today")
        
     if (isset($rss->error))
     {
-        return "Error: <B>" . $rss->error . "</b> <a href=\"http://feedvalidator.org/check?url=$url\">try to validate it?</a><br>";
+        return "Error: <B>" . $rss->error . "</b> <a target=\"_blank\" href=\"https://validator.w3.org/feed/check.cgi?url=$url\">try to validate it?</a><br>";
     }
     else
     {
@@ -798,9 +799,9 @@ function fof_parse($url)
     
     $pie = new SimplePie();
     $pie->set_cache_duration($admin_prefs["manualtimeout"] * 60);
-    $pie->set_favicon_handler("favicon.php");
+//    $pie->set_favicon_handler("favicon.php");
 	$pie->set_feed_url($url);
-	$pie->set_javascript(false);
+//	$pie->set_javascript(false);
 	$pie->remove_div(false);
 	$pie->init();
 	return $pie;
@@ -845,7 +846,7 @@ function fof_update_feed($id)
     if ($rss->error())
     {
         fof_log("feed update failed: " . $rss->error(), "update");
-        return array(0, "Error: <b>" . $rss->error() . "</b> <a href=\"http://feedvalidator.org/check?url=$url\">try to validate it?</a>");
+        return array(0, "Error: <b>" . $rss->error() . "</b> <a target=\"_blank\" href=\"https://validator.w3.org/feed/check.cgi?url=$url\">try to validate it?</a>");
     }
         
     $sub = html_entity_decode($rss->subscribe_url(), ENT_QUOTES);
@@ -859,7 +860,7 @@ function fof_update_feed($id)
     
     if($feed['feed_image_cache_date'] < (time() - (7*24*60*60)))
     {
-        $image = $rss->get_favicon();
+        $image = ""; //$rss->get_favicon();
         $image_cache_date = time();
     }
 	

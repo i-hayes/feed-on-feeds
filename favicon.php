@@ -15,7 +15,8 @@ require_once('simplepie/simplepie.inc');
 
 if(file_exists("./cache/" . md5($_GET["i"]) . ".spi"))
 {
-    SimplePie_Misc::display_cached_file($_GET["i"], './cache', 'spi');
+	$var = new SimplePie_Misc();
+	$var->display_cached_file($_GET["i"], './cache', 'spi');
 }
 else
 {

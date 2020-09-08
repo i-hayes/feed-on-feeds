@@ -70,5 +70,5 @@ foreach($feeds as $feed)
 ?>
 <script>
 window.onload = ajaxupdate;
-feedslist = [<?php print(join($feedjson, ", ")); ?>];
+feedslist = [<?php print(join(", ", $feedjson)); ?>];
 </script>
