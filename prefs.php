@@ -23,7 +23,7 @@ if(fof_is_admin() && isset($_POST['adminprefs']))
 	$prefs->set('purge', $_POST['purge']);
 	$prefs->set('manualtimeout', $_POST['manualtimeout']);
 	$prefs->set('autotimeout', $_POST['autotimeout']);
-	$prefs->set('logging', $_POST['logging']);
+	$prefs->set('logging', (isset($_POST['logging']) ? $_POST['logging'] : 0));
 
 	$prefs->save();
     	

@@ -78,12 +78,26 @@ if(isset($_POST["user_name"]) && isset($_POST["user_password"]))
   <body>
     <div>
       <form action="?login=1" method="POST" style="display: inline">
-        <center><a href="<?php print (SOURSE_WEB_SITE); ?>" style="font-size: 20px; font-family: georgia;">Feed on Feeds</a></center><br>
-        User name:<br><input type="string" name="user_name" style='font-size: 16px' /><br><br>
-        Password:<br><input type="password" name="user_password" style='font-size: 16px' /><br><br>
-        <input type="checkbox" name="remember" value="1"<?php if (isset($_POST["remember"]) and $_POST["remember"]) print (" checked=\"checked\""); ?> /> Remember me.<br><br>
-        <input type="submit" value="Log on!" style='font-size: 16px; float: right;' /><br>
-        <?php if($failed) echo "<br><center><font color=red><b>Incorrect user name or password</b></font></center>"; ?>
+        <center><a href="<?php print (SOURSE_WEB_SITE); ?>" style="font-size: 20px; font-family: georgia;">Feed on Feeds</a></center><br />
+        User name:<br /><input type="string" name="user_name" style='font-size: 16px' /><br /><br />
+        Password:<br /><input type="password" name="user_password" style='font-size: 16px' /><br /><br />
+        <input type="checkbox" name="remember" value="1"<?php if (isset($_POST["remember"]) and $_POST["remember"]) print (" checked=\"checked\""); ?> /> Remember me.<br /><br />
+        <input type="submit" value="Log on!" style='font-size: 16px; float: right;' /><br />
+        <?php if($failed)
+		{
+			echo "<br><center><font color=red><b>"; 
+			if (defined("ACCOUNT_LOCKED"))
+			{
+				echo "Account locked."; 
+			}
+			else
+			{
+				echo "Incorrect user name or password"; 
+			}
+			echo "</b></font></center>"; 
+
+		}
+		 ?>
       </form>
     </div>
   </body>

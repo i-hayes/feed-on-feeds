@@ -32,7 +32,7 @@ include_once("init.php");
 
 $n = $starred = 0;
 
-$search = $_GET['search'];
+if (isset($_GET['search'])) $search = $_GET['search']; else $search = "";
 
 echo "<script>what='$what'; when='$when'; session='".session_id()."'</script>";
 
@@ -63,9 +63,9 @@ echo "<script>starred = $starred;</script>";
     <li <?php if($what == "star") echo "style='background: #ddd'" ?> ><a href=".?what=star"><img src="image/star-on.gif" border="0" height="10" width="10"> Starred <span id="starredcount"><?php if($starred) echo "($starred)" ?></span></a></li>
     <li <?php if($what == "all" && isset($when)) echo "style='background: #ddd'" ?> ><a href=".?what=today">&lt; Today</a></li>
     <li <?php if($what == "all" && !isset($when)) echo "style='background: #ddd'" ?> ><a href=".?what=all">All Items <?php if($total) echo "($total)" ?></a></li>
-    <li <?php if(isset($search)) echo "style='background: #ddd'" ?> ><a href="javascript:Element.toggle('search'); Field.focus('searchfield');void(0);">Search</a>
-      <form action="." id="search" <?php if(!isset($search)) echo 'style="display: none"' ?>>
-        <input id="searchfield" name="search" value="<?php echo $search?>" />
+    <li <?php if(isset($_GET["search"])) echo "style='background: #ddd'" ?> ><a href="javascript:Element.toggle('search'); Field.focus('searchfield');void(0);">Search</a>
+      <form action="./" id="search" <?php if(!isset($_GET["search"])) echo 'style="display: none"' ?>>
+        <input id="searchfield" name="search" value="" />
 <?php
 	if($what == "unread")
 		echo "        <input type='hidden' name='what' value='all' />\n";

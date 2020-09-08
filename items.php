@@ -15,7 +15,7 @@
 include_once("fof-main.php");
 include_once("fof-render.php");
 
-$title = fof_view_title($_GET['feed'], $what, $when, $which, $_GET['howmany'], $_GET['search']);
+$title = fof_view_title($_GET['feed'], $what, $when, $which, $_GET['howmany'], $search);
 $noedit = $_GET['noedit'];
 if ($order == "desc") 
 { 
@@ -89,7 +89,7 @@ if($links)
 
 }
 
-$result = fof_get_items(fof_current_user(), $_GET['feed'], $what, $when, $which, $_GET['howmany'], $order, $_GET['search']);
+$result = fof_get_items(fof_current_user(), $_GET['feed'], $what, $when, $which, $_GET['howmany'], $order, $search);
 
 $first = true;
 $date_item_published_saved = 0;

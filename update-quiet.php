@@ -24,7 +24,7 @@ $FoF_Prefs = new FoF_Prefs("");
 $p = $FoF_Prefs->instance();
 $fof_admin_prefs = $p->prefs;
 
-fof_log("=== update started, timeout = $fof_admin_prefs[autotimeout], purge = $fof_admin_prefs[purge] ===", "update");
+fof_log("=== update started, timeout = ".$fof_admin_prefs["autotimeout"].", purge = ".$fof_admin_prefs["purge"]". ===", "update");
 
 $result = fof_db_get_feeds();
 

@@ -26,10 +26,12 @@ class FoF_Prefs
 
         $result = fof_safe_query("select `user_prefs` from `".FOF_USER_TABLE."` where `user_id` = %d", $user_id);
         $row = $result->fetch_assoc();
-        $prefs = unserialize($row['user_prefs']);
-        if(!is_array($prefs)) $prefs = array();
-        $this->prefs = $prefs;
-
+        if ($row)
+        {
+			$prefs = unserialize($row['user_prefs']);
+			if(!is_array($prefs)) $prefs = array();
+			$this->prefs = $prefs;
+		}
         if($user_id != 1)
         {
             $result = fof_safe_query("select `user_prefs` from `".FOF_USER_TABLE."` where `user_id` = 1");

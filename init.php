@@ -3,7 +3,7 @@
 if (!isset($_GET['what'])) $what = $_GET['what'] = "";
 if (!isset($_GET["when"])) $when = $_GET["when"] = "";
 if (!isset($_GET['howmany'])) $_GET['howmany'] = 0;
-if (!isset($_GET['search'])) $_GET['search'] = "";
+//if (!isset($_GET['search'])) $_GET['search'] = "";
 if (!isset($_GET['how'])) $how = $_GET['how'] = "";
 if (!isset($_GET['which'])) $_GET['which'] = "";
 if (!isset($_GET['noedit'])) $_GET['noedit'] = 0;

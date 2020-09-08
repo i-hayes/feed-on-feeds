@@ -460,7 +460,7 @@ function fof_get_feeds($user_id, $order = 'feed_title', $direction = 'asc')
 	{
 		$id = $feed['feed_id'];
 		$feeds[$id]['tags'] = array();
-		if(is_array($feeds[$id]['prefs']['tags']))
+		if(!is_bool($feeds[$id]['prefs']))
 		{
 			foreach($feeds[$id]['prefs']['tags'] as $tag)
 			{
@@ -1323,7 +1323,7 @@ function fof_repair_drain_bamage()
 		}
 	}
 	// thanks to submitter of http://bugs.php.net/bug.php?id=39859
-	if (get_magic_quotes_gpc()) 
+/*	if (get_magic_quotes_gpc()) 
 	{
 		function undoMagicQuotes($array, $topLevel=true) 
 		{
@@ -1347,6 +1347,7 @@ function fof_repair_drain_bamage()
 		$_COOKIE = undoMagicQuotes($_COOKIE);
 		$_REQUEST = undoMagicQuotes($_REQUEST);
 	}
+*/
 }
 
 // for PHP 4 compatibility

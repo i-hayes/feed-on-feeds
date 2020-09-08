@@ -344,7 +344,7 @@ function fof_db_get_items($user_id=1, $feed=NULL, $what="unread", $when=NULL, $s
         if (strpos($what, " ")) $tags = explode(" ", $what); else $tags[] = $what;
         if ($tags[0] == "all") array_shift($tags);
         foreach($tags As $k => $v) $tags[$k] = "'".trim($v)."'";
-        $in = implode($tags, ", ");
+        $in = implode(", ", $tags);
         $from .= ", `".FOF_TAG_TABLE."` t, `".FOF_ITEM_TAG_TABLE."` it ";
         $where .= sprintf("AND it.user_id = %d ", $user_id);
 		$where .= "AND it.tag_id = t.tag_id AND ( t.tag_name IN ( ".$in." ) ) AND i.item_id = it.item_id ";
@@ -386,7 +386,7 @@ function fof_db_get_items($user_id=1, $feed=NULL, $what="unread", $when=NULL, $s
         $i++;
     }
     
-    $items = join($ids, ", ");
+    $items = join(", ", $ids);
     
     $result = fof_safe_query("select `".FOF_TAG_TABLE."`.tag_name, `".FOF_ITEM_TAG_TABLE."`.item_id from `".FOF_TAG_TABLE."`, `".FOF_ITEM_TAG_TABLE."` where `".FOF_TAG_TABLE."`.tag_id = `".FOF_ITEM_TAG_TABLE."`.tag_id and `".FOF_ITEM_TAG_TABLE."`.item_id in (%s) and `".FOF_ITEM_TAG_TABLE."`.user_id = %d", $items, $user_id);
     
